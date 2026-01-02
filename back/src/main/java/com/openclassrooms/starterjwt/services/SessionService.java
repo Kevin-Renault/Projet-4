@@ -27,6 +27,10 @@ public class SessionService {
     }
 
     public void delete(Long id) {
+        Session session = this.getById(Long.valueOf(id));
+        if (session == null) {
+            throw new NotFoundException();
+        }
         this.sessionRepository.deleteById(id);
     }
 
@@ -35,7 +39,11 @@ public class SessionService {
     }
 
     public Session getById(Long id) {
-        return this.sessionRepository.findById(id).orElse(null);
+        Session session = this.sessionRepository.findById(id).orElse(null);
+        if (session == null) {
+            throw new NotFoundException();
+        }
+        return session;
     }
 
     public Session update(Long id, Session session) {
@@ -49,14 +57,11 @@ public class SessionService {
         if (session == null || user == null) {
             throw new NotFoundException();
         }
-
         boolean alreadyParticipate = session.getUsers().stream().anyMatch(o -> o.getId().equals(userId));
         if (alreadyParticipate) {
             throw new BadRequestException();
         }
-
         session.getUsers().add(user);
-
         this.sessionRepository.save(session);
     }
 
@@ -71,7 +76,8 @@ public class SessionService {
             throw new BadRequestException();
         }
 
-        session.setUsers(session.getUsers().stream().filter(user -> !user.getId().equals(userId)).collect(Collectors.toList()));
+        session.setUsers(
+                session.getUsers().stream().filter(user -> !user.getId().equals(userId)).collect(Collectors.toList()));
 
         this.sessionRepository.save(session);
     }

@@ -26,11 +26,6 @@ public class TeacherController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable("id") String id) {
         Teacher teacher = this.teacherService.findById(Long.valueOf(id));
-
-        if (teacher == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok().body(this.teacherMapper.toDto(teacher));
     }
 
