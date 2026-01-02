@@ -9,6 +9,7 @@
       </div>
     </mat-card-title>
     <mat-card-content>
+      user$ | async as user
       @if (user) {
       <div fxLayout="column" fxLayoutAlign="start center">
         <p>Name: {{ user.firstName }} {{ user.lastName | uppercase }}</p>
