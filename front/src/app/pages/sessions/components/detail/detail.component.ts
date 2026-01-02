@@ -1,4 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +18,8 @@ import { CommonModule } from "@angular/common";
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss']
 })
-export class DetailComponent implements OnInit {
+export class DetailComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   public session: Session | undefined;
   public teacher: Teacher | undefined;
   public isParticipate = false;
@@ -41,6 +44,12 @@ export class DetailComponent implements OnInit {
   ngOnInit(): void {
     this.fetchSession();
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
 
   public back(): void {
     window.history.back();
@@ -67,13 +76,14 @@ export class DetailComponent implements OnInit {
   private fetchSession(): void {
     this.sessionApiService
       .detail(this.sessionId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((session: Session) => {
         this.session = session;
         this.isParticipate = session.users.some(user => user === this.sessionService.sessionInformation!.id);
         this.teacherService
           .detail(session.teacher_id.toString())
+          .pipe(takeUntil(this.destroy$))
           .subscribe((teacher: Teacher) => this.teacher = teacher);
       });
   }
-
 }
