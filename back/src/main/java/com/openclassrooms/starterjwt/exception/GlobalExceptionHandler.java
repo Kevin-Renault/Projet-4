@@ -16,15 +16,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     /**
-     * Gère toutes les autres exceptions NumberFormatException spécifiquement.
+     * Gère les autres exceptions spécifiquement.
      * Détermine le code HTTP approprié.
      * 
      * @param ex L'exception levée
      * @return Une réponse HTTP avec le code de statut approprié
      */
-    @ExceptionHandler(NumberFormatException.class)
-    public ResponseEntity<?> handleGlobalException(NumberFormatException ex) {
-        // return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGlobalException(Exception ex) {
+        System.out.println("Global exception handler caught: " + ex.getClass().getName());
+        if (ex instanceof NumberFormatException || ex instanceof BadRequestException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else if (ex instanceof NotAuthorizedException) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } else if (ex instanceof NotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
