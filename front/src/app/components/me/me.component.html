@@ -9,15 +9,14 @@
       </div>
     </mat-card-title>
     <mat-card-content>
-      user$ | async as user
-      @if (user) {
+      @let user = userFromDb$ | async;
+      @if (user){
       <div fxLayout="column" fxLayoutAlign="start center">
         <p>Name: {{ user.firstName }} {{ user.lastName | uppercase }}</p>
         <p>Email: {{ user.email }}</p>
         @if (user.admin) {
         <p class="my2">You are admin</p>
-        }
-        @else {
+        } @else {
         <div fxLayout="column" class="my2" fxLayoutAlign="center center">
           <p>Delete my account:</p>
           <button mat-raised-button color="warn" (click)="delete()">

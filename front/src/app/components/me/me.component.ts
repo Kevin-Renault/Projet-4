@@ -18,7 +18,7 @@ export class MeComponent implements OnInit {
   private sessionService = inject(SessionService);
   private matSnackBar = inject(MatSnackBar);
   private userService = inject(UserService);
-  public user$ = this.userService.getById(this.sessionService.sessionInformation!.id.toString());
+  public userFromDb$ = this.userService.getById(this.sessionService.sessionInformation!.id.toString());
 
 
   ngOnInit(): void {
