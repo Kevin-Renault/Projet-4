@@ -18,13 +18,10 @@ export class MeComponent implements OnInit {
   private sessionService = inject(SessionService);
   private matSnackBar = inject(MatSnackBar);
   private userService = inject(UserService);
-  public user: User | undefined;
+  public userFromDb$ = this.userService.getById(this.sessionService.sessionInformation!.id.toString());
 
 
   ngOnInit(): void {
-    this.userService
-      .getById(this.sessionService.sessionInformation!.id.toString())
-      .subscribe((user: User) => this.user = user);
   }
 
   public back(): void {
@@ -40,5 +37,4 @@ export class MeComponent implements OnInit {
         this.router.navigate(['/']);
       })
   }
-
 }
