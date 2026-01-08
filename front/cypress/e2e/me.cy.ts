@@ -1,21 +1,20 @@
 
 import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON } from './selectors';
+import { ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD } from './test-data';
 
 
 
 
 describe('Me spec', () => {
 
-
+  beforeEach(() => {
+    // Login automatique avant chaque test
+    cy.login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);  // Si vous utilisez les commandes ci-dessus
+    // Ou code inline si pas de commandes
+  });
 
   it('Display user info after login (Real Api)', () => {
-    cy.visit('/login')
 
-    cy.intercept('POST', '/api/auth/login').as('loginRequest')
-    cy.get(EMAIL_FIELD).type("yoga@studio.com")
-    cy.get(PASSWORD_FIELD).type(`${"test!1234"}{enter}{enter}`)
-    cy.wait('@loginRequest').its('response.statusCode').should('eq', 200)
-    cy.url().should('include', '/sessions')
 
     // Intercepter la requête user réelle pour attendre son chargement
     cy.intercept('GET', '/api/user/1').as('user')
@@ -41,14 +40,6 @@ describe('Me spec', () => {
 
   it('Delete user not possible when admin - Real Api', () => {
 
-    cy.visit('/login')
-
-    cy.intercept('POST', '/api/auth/login').as('loginRequest')
-    cy.get(EMAIL_FIELD).type("yoga@studio.com")
-    cy.get(PASSWORD_FIELD).type(`${"test!1234"}{enter}{enter}`)
-    cy.wait('@loginRequest').its('response.statusCode').should('eq', 200)
-    cy.url().should('include', '/sessions')
-
     // Intercepter la requête user réelle pour attendre son chargement
     cy.intercept('GET', '/api/user/1').as('user')
 
@@ -67,22 +58,13 @@ describe('Me spec', () => {
 
   it('Delete user after register/login (Real Api)', () => {
 
-    cy.visit('/register')
-    cy.intercept('POST', '/api/auth/register').as('loginRequest')
-    cy.get(FIRST_NAME_FIELD).type("John")
-    cy.get(LAST_NAME_FIELD).type("Doe")
-    cy.get(EMAIL_FIELD).type("yoga_user@studio.com")
-    cy.get(PASSWORD_FIELD).type(`${"test!1234"}{enter}{enter}`)
-    cy.wait('@loginRequest').its('response.statusCode').should('eq', 200)
-    cy.url().should('include', '/login')
+    cy.register({
+      firstName: 'John', lastName: 'Doe',
+      email: 'yoga_user@studio.com', password: 'test!1234'
+    });
 
-    cy.visit('/login')
+    cy.login('yoga_user@studio.com', 'test!1234');  // Si vous utilisez les commandes ci-dessus
 
-    cy.intercept('POST', '/api/auth/login').as('loginRequest')
-    cy.get(EMAIL_FIELD).type("yoga_user@studio.com")
-    cy.get(PASSWORD_FIELD).type(`${"test!1234"}{enter}{enter}`)
-    cy.wait('@loginRequest').its('response.statusCode').should('eq', 200)
-    cy.url().should('include', '/sessions')
 
     // Intercepter la requête user réelle pour attendre son chargement
     cy.intercept('GET', '/api/user/*').as('user')
