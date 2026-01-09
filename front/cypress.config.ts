@@ -1,5 +1,4 @@
 import { defineConfig } from 'cypress'
-import setupNodeEvents from './cypress/plugins/index.ts'
 
 export default defineConfig({
   videosFolder: 'cypress/videos',
@@ -7,7 +6,9 @@ export default defineConfig({
   fixturesFolder: 'cypress/fixtures',
   video: false,
   e2e: {
-    setupNodeEvents,
+    setupNodeEvents(on, config) {
+      return require('./cypress/plugins/index.ts').default(on, config)
+    },
     baseUrl: 'http://localhost:4200',
   },
 })

@@ -143,10 +143,9 @@
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "yoga:serve",
+            "devServerTarget": "yoga:serve-coverage",
             "watch": true,
-            "headless": false,
-            "browser": "electron"
+            "headless": false
           },
           "configurations": {
             "production": {
