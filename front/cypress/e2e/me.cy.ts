@@ -1,6 +1,9 @@
 
-import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON } from './selectors';
-import { ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD, NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD } from './test-data';
+import { BE_VISIBLE, NOT_EXIST } from './selectors';
+import {
+  ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD, NEW_USER_FIRST_NAME,
+  NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD
+} from './test-data';
 
 
 
@@ -23,12 +26,12 @@ describe('Me spec', () => {
     cy.wait('@user')
 
     // Vérifications (ajustez si les données réelles diffèrent)
-    cy.contains('User information').should('be.visible')
-    cy.contains('Name: Admin ADMIN').should('be.visible')
-    cy.contains('Email: yoga@studio.com').should('be.visible')
-    cy.contains('You are admin').should('be.visible')
-    cy.contains('Create at:').should('be.visible')
-    cy.contains('Last update:').should('be.visible')
+    cy.contains('User information').should(BE_VISIBLE)
+    cy.contains('Name: Admin ADMIN').should(BE_VISIBLE)
+    cy.contains('Email: yoga@studio.com').should(BE_VISIBLE)
+    cy.contains('You are admin').should(BE_VISIBLE)
+    cy.contains('Create at:').should(BE_VISIBLE)
+    cy.contains('Last update:').should(BE_VISIBLE)
 
     cy.get('mat-icon').contains('arrow_back').parent('button').click()
     cy.url().should('include', '/sessions')
@@ -47,9 +50,9 @@ describe('Me spec', () => {
     cy.wait('@user')
 
     // Vérifications pour admin : le bouton Delete n'existe pas
-    cy.contains('You are admin').should('be.visible')
-    cy.contains('Delete my account:').should('not.exist')
-    cy.get('button').contains('Delete').should('not.exist')
+    cy.contains('You are admin').should(BE_VISIBLE)
+    cy.contains('Delete my account:').should(NOT_EXIST)
+    cy.get('button').contains('Delete').should(NOT_EXIST)
   })
 
   it('Register login then Delete user', () => {
