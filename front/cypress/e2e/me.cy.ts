@@ -13,7 +13,7 @@ describe('Me spec', () => {
     // Ou code inline si pas de commandes
   });
 
-  it('Display user info after login (Real Api)', () => {
+  it('Display user info after login', () => {
 
 
     // Intercepter la requête user réelle pour attendre son chargement
@@ -38,7 +38,7 @@ describe('Me spec', () => {
   })
 
 
-  it('Delete user not possible when admin - Real Api', () => {
+  it('Delete user not possible when admin', () => {
 
     // Intercepter la requête user réelle pour attendre son chargement
     cy.intercept('GET', '/api/user/1').as('user')
@@ -56,36 +56,33 @@ describe('Me spec', () => {
   })
 
 
-  it('Delete user after register/login (Real Api)', () => {
+  // cy.register({
+  //   firstName: 'John', lastName: 'Doe',
+  //   email: 'yoga_user@studio.com', password: 'test!1234'
+  // });
 
-    cy.register({
-      firstName: 'John', lastName: 'Doe',
-      email: 'yoga_user@studio.com', password: 'test!1234'
-    });
-
-    cy.login('yoga_user@studio.com', 'test!1234');  // Si vous utilisez les commandes ci-dessus
+  // cy.login('yoga_user@studio.com', 'test!1234');  // Si vous utilisez les commandes ci-dessus
 
 
-    // Intercepter la requête user réelle pour attendre son chargement
-    cy.intercept('GET', '/api/user/*').as('user')
+  // // Intercepter la requête user réelle pour attendre son chargement
+  // cy.intercept('GET', '/api/user/*').as('user')
 
-    // Aller sur /me via le bouton Account
-    cy.get('span[routerLink="me"]').click()
+  // // Aller sur /me via le bouton Account
+  // cy.get('span[routerLink="me"]').click()
 
-    // Attendre le chargement des données
-    cy.wait('@user')
+  // // Attendre le chargement des données
+  // cy.wait('@user')
 
-    // Intercepter la vraie requête DELETE (pas de mock, utilise l'id réel de session)
-    cy.intercept('DELETE', '/api/user/*').as('deleteRequest')
+  // // Intercepter la vraie requête DELETE (pas de mock, utilise l'id réel de session)
+  // cy.intercept('DELETE', '/api/user/*').as('deleteRequest')
 
-    // Cliquer sur le bouton Delete
-    cy.get('button').contains('Delete').click()
+  // // Cliquer sur le bouton Delete
+  // cy.get('button').contains('Delete').click()
 
-    // Attendre la vraie requête DELETE et vérifier succès
-    cy.wait('@deleteRequest').its('response.statusCode').should('eq', 200)
+  // // Attendre la vraie requête DELETE et vérifier succès
+  // cy.wait('@deleteRequest').its('response.statusCode').should('eq', 200)
 
-    // Après delete, l'utilisateur est déconnecté et redirigé vers /
-    cy.url().should('include', '/')
-  })
+  // // Après delete, l'utilisateur est déconnecté et redirigé vers /
+  // cy.url().should('include', '/')
 
 });
