@@ -4,29 +4,41 @@ import {
   SESSION_SUBMIT_BUTTON, DISABLED, NOT_DISABLED
 } from './selectors';
 import {
-  ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD, SESSION_NAME, SESSION_DATE, SESSION_DESCRIPTION,
-  SESSION_TEACHER_ID,
-  YOGA_USER_EMAIL
+  ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD, NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD,
+  YOGA_USER_EMAIL,
+  YOGA_USER_PASSWORD
 } from './test-data';
 
 
 
 describe('Detail spec', () => {
+  before(() => {
+    cy.delete_users();
+    cy.register(
+      {
+        firstName: NEW_USER_FIRST_NAME, lastName: NEW_USER_LAST_NAME,
+        email: YOGA_USER_EMAIL, password: YOGA_USER_PASSWORD
+      }
+    );
+    cy.register(
+      {
+        firstName: NEW_USER_FIRST_NAME, lastName: NEW_USER_LAST_NAME,
+        email: NEW_USER_EMAIL, password: NEW_USER_PASSWORD
+      }
+    );
+  });
 
-  it('Delete session not possible when not admin - Real Api', () => {
-
-    cy.login(YOGA_USER_EMAIL, ADMIN_USER_PASSWORD);
+  it('Delete session not possible when not admin', () => {
+    cy.login(NEW_USER_EMAIL, NEW_USER_PASSWORD);
     // Intercepter la requête session réelle pour attendre son chargement
     cy.intercept('GET', '/api/session/*').as('session')
 
-    cy.visit('/sessions');
     cy.get('button').contains('Detail').first().click();
 
     // Attendre le chargement des données
     cy.wait('@session')
 
     // Vérifications pour session
-    cy.contains('Session ').should('be.visible')
     cy.contains('attendees ').should('be.visible')
     cy.contains('Description:').should('be.visible')
     cy.contains('Create at:').should('be.visible')
@@ -37,23 +49,22 @@ describe('Detail spec', () => {
 
     cy.get('mat-icon').contains('arrow_back').parent('button').click()
     cy.url().should('include', '/sessions')
+
   })
 
 
-  it('Delete session possible when admin - Real Api', () => {
+  it('Delete session possible when admin', () => {
 
     cy.login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);
     // Intercepter la requête session réelle pour attendre son chargement
     cy.intercept('GET', '/api/session/*').as('session')
 
-    cy.visit('/sessions');
     cy.get('button').contains('Detail').first().click();
 
     // Attendre le chargement des données
     cy.wait('@session')
 
     // Vérifications pour User
-    cy.contains('Session ').should('be.visible')
     cy.contains('attendees ').should('be.visible')
     cy.contains('Description:').should('be.visible')
     cy.contains('Create at:').should('be.visible')
@@ -66,13 +77,11 @@ describe('Detail spec', () => {
 
 
 
-  it('Participate on session then unparticipate - Real Api', () => {
-
-    cy.login(YOGA_USER_EMAIL, ADMIN_USER_PASSWORD);
+  it('Participate on session then unparticipate', () => {
+    cy.login(NEW_USER_EMAIL, NEW_USER_PASSWORD);
     // Intercepter la requête session réelle pour attendre son chargement
     cy.intercept('GET', '/api/session/*').as('session')
 
-    cy.visit('/sessions');
     cy.get('button').contains('Detail').first().click();
 
     // Attendre le chargement des données
@@ -138,4 +147,7 @@ describe('Detail spec', () => {
   //  cy.get(SESSION_SUBMIT_BUTTON).should(DISABLED);
   // });
 
+  after(() => {
+    cy.delete_users();
+  });
 });

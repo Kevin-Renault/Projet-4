@@ -2,10 +2,13 @@
 
 
 import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON, DISABLED, NOT_DISABLED } from './selectors';
-import { NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD, YOGA_USER_EMAIL, YOGA_USER_PASSWORD, INVALID_EMAIL, VALID_EMAIL, INVALID_PASSWORD } from './test-data';
+import { NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD, YOGA_USER_EMAIL, YOGA_USER_PASSWORD, INVALID_EMAIL, VALID_EMAIL, INVALID_PASSWORD, ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD } from './test-data';
 
 
 describe('Register spec', () => {
+  before(() => {
+    cy.delete_users();
+  });
 
   it('Register fail', () => {
     cy.visit('/register')
@@ -13,8 +16,8 @@ describe('Register spec', () => {
 
     cy.get(FIRST_NAME_FIELD).type(NEW_USER_FIRST_NAME)
     cy.get(LAST_NAME_FIELD).type(NEW_USER_LAST_NAME)
-    cy.get(EMAIL_FIELD).type(YOGA_USER_EMAIL)
-    cy.get(PASSWORD_FIELD).type(`${YOGA_USER_PASSWORD}{enter}{enter}`)
+    cy.get(EMAIL_FIELD).type(ADMIN_USER_EMAIL)
+    cy.get(PASSWORD_FIELD).type(`${ADMIN_USER_PASSWORD}{enter}{enter}`)
 
     cy.wait('@registerRequest').its('response.statusCode').should('eq', 400)
     cy.url().should('include', '/register')
@@ -56,4 +59,7 @@ describe('Register spec', () => {
     cy.get(SUBMIT_BUTTON).should(NOT_DISABLED)
   })
 
+  after(() => {
+    cy.delete_users();
+  });
 });
