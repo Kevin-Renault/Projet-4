@@ -1,5 +1,3 @@
-
-import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON } from './selectors';
 import { ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD } from './test-data';
 
 

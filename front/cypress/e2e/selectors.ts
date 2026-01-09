@@ -6,6 +6,12 @@ export const LAST_NAME_FIELD = 'input[formControlName=lastName]';
 export const SUBMIT_BUTTON = 'button[type=submit]';
 export const DISABLED = 'be.disabled';
 export const NOT_DISABLED = 'not.be.disabled';
+export const BE_VISIBLE = 'be.visible';
+export const NOT_BE_VISIBLE = 'not.be.visible';
+export const EXIST = 'exist';
+export const NOT_EXIST = 'not.exist';
+
+
 
 // Sélecteurs pour le formulaire de session
 export const SESSION_NAME_FIELD = 'input[formControlName=name]';

@@ -1,8 +1,15 @@
 
 
 
-import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON, DISABLED, NOT_DISABLED } from './selectors';
-import { NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD, YOGA_USER_EMAIL, YOGA_USER_PASSWORD, INVALID_EMAIL, VALID_EMAIL, INVALID_PASSWORD, ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD } from './test-data';
+import {
+  EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD,
+  LAST_NAME_FIELD, SUBMIT_BUTTON, DISABLED, NOT_DISABLED, BE_VISIBLE
+} from './selectors';
+import {
+  NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME,
+  YOGA_USER_PASSWORD, INVALID_EMAIL, VALID_EMAIL, INVALID_PASSWORD,
+  ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD
+} from './test-data';
 
 
 describe('Register spec', () => {
@@ -21,7 +28,7 @@ describe('Register spec', () => {
 
     cy.wait('@registerRequest').its('response.statusCode').should('eq', 400)
     cy.url().should('include', '/register')
-    cy.contains('An error occurred').should('be.visible')
+    cy.contains('An error occurred').should(BE_VISIBLE)
   })
 
   it('Form validation errors', () => {
