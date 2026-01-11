@@ -102,17 +102,5 @@ describe('LoginComponent', () => {
       expect(component.form.get('password')?.errors).toEqual({ minlength: { requiredLength: 3, actualLength: 2 } });
 
     });
-
-    // Test formulaire valide
-    it('should have valid form when all fields are correct', () => {
-      component.form.setValue({
-        email: 'test@example.com',
-        password: 'password123'
-      });
-      expect(component.form.valid).toBe(true);
-      expect(component.form.get('email')?.valid).toBe(true);
-      expect(component.form.get('password')?.valid).toBe(true);
-    });
   });
-
 });

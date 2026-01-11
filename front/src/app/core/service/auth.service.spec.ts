@@ -9,7 +9,7 @@ import { SessionInformation } from '../models/sessionInformation.interface';
 
 describe('AuthService', () => {
     let service: AuthService;
-    let httpMock: HttpTestingController;
+    let httpTestingController: HttpTestingController;
 
     const mockLoginRequest: LoginRequest = {
         email: 'test@example.com',
@@ -38,11 +38,11 @@ describe('AuthService', () => {
             imports: [HttpClientTestingModule]
         });
         service = TestBed.inject(AuthService);
-        httpMock = TestBed.inject(HttpTestingController);
+        httpTestingController = TestBed.inject(HttpTestingController);
     });
 
     afterEach(() => {
-        httpMock.verify();
+        httpTestingController.verify();
     });
 
     // Test de l'appel à register qui retourne void en cas de succès
@@ -52,7 +52,7 @@ describe('AuthService', () => {
             expect(true).toBeTruthy();
         });
 
-        const req = httpMock.expectOne('/api/auth/register');
+        const req = httpTestingController.expectOne('/api/auth/register');
         expect(req.request.method).toBe('POST');
         expect(req.request.body).toEqual(mockRegisterRequest);
 
@@ -65,7 +65,7 @@ describe('AuthService', () => {
             expect(sessionInfo).toEqual(mockSessionInfo);
         });
 
-        const req = httpMock.expectOne('/api/auth/login');
+        const req = httpTestingController.expectOne('/api/auth/login');
         expect(req.request.method).toBe('POST');
         expect(req.request.body).toEqual(mockLoginRequest);
 

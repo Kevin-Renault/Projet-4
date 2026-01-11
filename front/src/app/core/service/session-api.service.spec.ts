@@ -6,7 +6,7 @@ import { Session } from '../models/session.interface';
 
 describe('SessionsService', () => {
   let service: SessionApiService;
-  let httpMock: HttpTestingController;
+  let httpTestingController: HttpTestingController;
 
   const mockSession1: Session =
     { id: 1, name: 'Yoga Session', description: 'Relaxing yoga', date: new Date(), teacher_id: 1, users: [] };
@@ -21,11 +21,11 @@ describe('SessionsService', () => {
       providers: [SessionApiService]
     })
     service = TestBed.inject(SessionApiService);
-    httpMock = TestBed.inject(HttpTestingController);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();  // Ajouté pour vérifier les requêtes
+    httpTestingController.verify();  // Ajouté pour vérifier les requêtes
   });
 
   it('should call all and return an array of sessions', () => {
@@ -34,7 +34,7 @@ describe('SessionsService', () => {
       expect(sessions).toEqual(mockSessions); // Vérifier que les données correspondent
     });
     // Vérifier que la requête HTTP a été faite
-    const req = httpMock.expectOne('api/session'); // Vérifie l'URL
+    const req = httpTestingController.expectOne('api/session'); // Vérifie l'URL
     expect(req.request.method).toBe('GET'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur
@@ -48,7 +48,7 @@ describe('SessionsService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req1 = httpMock.expectOne('api/session/1'); // Vérifie l'URL
+    const req1 = httpTestingController.expectOne('api/session/1'); // Vérifie l'URL
     expect(req1.request.method).toBe('GET'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur
@@ -58,7 +58,7 @@ describe('SessionsService', () => {
       expect(session).toEqual(mockSessions[1]); // Vérifier que les données correspondent
     });
     // Vérifier que la requête HTTP a été faite
-    const req2 = httpMock.expectOne('api/session/2'); // Vérifie l'URL
+    const req2 = httpTestingController.expectOne('api/session/2'); // Vérifie l'URL
     expect(req2.request.method).toBe('GET'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur
@@ -73,7 +73,7 @@ describe('SessionsService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req1 = httpMock.expectOne('api/session/1'); // Vérifie l'URL avec l'id
+    const req1 = httpTestingController.expectOne('api/session/1'); // Vérifie l'URL avec l'id
     expect(req1.request.method).toBe('DELETE'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur (souvent le session supprimé ou un message)
@@ -87,7 +87,7 @@ describe('SessionsService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req = httpMock.expectOne('api/session'); // Vérifie l'URL avec l'id
+    const req = httpTestingController.expectOne('api/session'); // Vérifie l'URL avec l'id
     expect(req.request.method).toBe('POST'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur (souvent le session supprimé ou un message)
@@ -102,7 +102,7 @@ describe('SessionsService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req = httpMock.expectOne('api/session/1'); // Vérifie l'URL avec l'id
+    const req = httpTestingController.expectOne('api/session/1'); // Vérifie l'URL avec l'id
     expect(req.request.method).toBe('PUT'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur (souvent le session supprimé ou un message)
@@ -117,7 +117,7 @@ describe('SessionsService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req = httpMock.expectOne('api/session/1/participate/1'); // Vérifie l'URL avec l'id de session et user
+    const req = httpTestingController.expectOne('api/session/1/participate/1'); // Vérifie l'URL avec l'id de session et user
     expect(req.request.method).toBe('POST'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur (souvent le session supprimé ou un message)
@@ -132,7 +132,7 @@ describe('SessionsService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req = httpMock.expectOne('api/session/1/participate/1'); // Vérifie l'URL avec l'id de session et user
+    const req = httpTestingController.expectOne('api/session/1/participate/1'); // Vérifie l'URL avec l'id de session et user
     expect(req.request.method).toBe('DELETE'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur (souvent le session supprimé ou un message)

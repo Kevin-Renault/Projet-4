@@ -12,6 +12,9 @@ module.exports = {
       },
     ],
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!.*\\.mjs$)',
+  ],
   setupFiles: ['<rootDir>/setup-jest.ts'],
   bail: false,
   verbose: false,
