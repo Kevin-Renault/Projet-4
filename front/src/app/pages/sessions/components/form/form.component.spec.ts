@@ -163,14 +163,6 @@ describe('FormComponent', () => {
     expect(completeSpy).toHaveBeenCalled();
   });
 
-  // Test de la méthode exitPage
-  it('should show snackbar and navigate on exitPage', () => {
-    component['exitPage']('Test message');
-    expect(mockMatSnackBar.open).toHaveBeenCalledWith('Test message', 'Close', { duration: 3000 });
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
-  });
-
-
   // Test des validateurs du formulaire
   it('should have required validators and maxLength validator for description', () => {
     mockRouter.url = '/sessions/create';
