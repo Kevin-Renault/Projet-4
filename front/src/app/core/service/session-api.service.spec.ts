@@ -28,10 +28,6 @@ describe('SessionsService', () => {
     httpMock.verify();  // Ajouté pour vérifier les requêtes
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   it('should call all and return an array of sessions', () => {
     // Appeler la méthode et s'abonner
     service.all().subscribe((sessions) => {

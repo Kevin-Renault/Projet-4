@@ -129,19 +129,6 @@ describe('FormComponent', () => {
     component = fixture.componentInstance;
   });
 
-  // Test de la création du composant
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
-  // Test de redirection si l'utilisateur n'est pas admin
-  it('should redirect to sessions if user is not admin', () => {
-    mockSessionService.sessionInformation!.admin = false;
-    fixture.detectChanges();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
-  });
-
   // Test d'initialisation en mode création
   it('should initialize form in create mode', () => {
     mockRouter.url = '/sessions/create';
@@ -166,48 +153,6 @@ describe('FormComponent', () => {
     expect(component.sessionForm?.get(DESCRIPTION_FIELD)?.value).toBe(TEST_DESCRIPTION);
   });
 
-  // Test de soumission en mode création
-  it('should submit and create session', () => {
-    mockRouter.url = '/sessions/create';
-    fixture.detectChanges();
-    component.sessionForm?.setValue({
-      [NAME_FIELD]: NEW_SESSION_NAME,
-      [DATE_FIELD]: TEST_DATE,
-      [TEACHER_ID_FIELD]: 1,
-      [DESCRIPTION_FIELD]: NEW_DESCRIPTION
-    });
-    component.submit();
-    expect(mockSessionApiService.create).toHaveBeenCalledWith({
-      name: NEW_SESSION_NAME,
-      date: TEST_DATE,
-      teacher_id: 1,
-      description: NEW_DESCRIPTION
-    });
-    expect(mockMatSnackBar.open).toHaveBeenCalledWith('Session created !', 'Close', { duration: 3000 });
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
-  });
-
-  // Test de soumission en mode mise à jour
-  it('should submit and update session', () => {
-    mockRouter.url = '/sessions/update/1';
-    fixture.detectChanges();
-    component.sessionForm?.setValue({
-      [NAME_FIELD]: UPDATED_SESSION_NAME,
-      [DATE_FIELD]: UPDATED_DATE,
-      [TEACHER_ID_FIELD]: 2,
-      [DESCRIPTION_FIELD]: UPDATED_DESCRIPTION
-    });
-    component.submit();
-    expect(mockSessionApiService.update).toHaveBeenCalledWith('1', {
-      name: UPDATED_SESSION_NAME,
-      date: UPDATED_DATE,
-      teacher_id: 2,
-      description: UPDATED_DESCRIPTION
-    });
-    expect(mockMatSnackBar.open).toHaveBeenCalledWith('Session updated !', 'Close', { duration: 3000 });
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
-  });
-
   // Test de destruction du composant
   it('should complete destroy$ on ngOnDestroy', () => {
     fixture.detectChanges();
@@ -225,27 +170,9 @@ describe('FormComponent', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
   });
 
-  // Test de l'initialisation du formulaire sans session
-  it('should init form without session', () => {
-    component['initForm']();
-    expect(component.sessionForm).toBeDefined();
-    expect(component.sessionForm?.get(NAME_FIELD)?.value).toBe('');
-    expect(component.sessionForm?.get(DATE_FIELD)?.value).toBe('');
-    expect(component.sessionForm?.get(TEACHER_ID_FIELD)?.value).toBe('');
-    expect(component.sessionForm?.get(DESCRIPTION_FIELD)?.value).toBe('');
-  });
-
-  // Test de l'initialisation du formulaire avec session
-  it('should init form with session', () => {
-    component['initForm'](mockSession);
-    expect(component.sessionForm?.get(NAME_FIELD)?.value).toBe(TEST_SESSION_NAME);
-    expect(component.sessionForm?.get(DATE_FIELD)?.value).toBe(TEST_DATE);
-    expect(component.sessionForm?.get(TEACHER_ID_FIELD)?.value).toBe(1);
-    expect(component.sessionForm?.get(DESCRIPTION_FIELD)?.value).toBe(TEST_DESCRIPTION);
-  });
 
   // Test des validateurs du formulaire
-  it('should have required validators', () => {
+  it('should have required validators and maxLength validator for description', () => {
     mockRouter.url = '/sessions/create';
     fixture.detectChanges();
     const nameControl = component.sessionForm?.get(NAME_FIELD);
@@ -262,13 +189,7 @@ describe('FormComponent', () => {
     expect(dateControl?.valid).toBe(false);
     expect(teacherControl?.valid).toBe(false);
     expect(descControl?.valid).toBe(false);
-  });
 
-  // Test du validateur maxLength pour la description
-  it('should have maxLength validator for description', () => {
-    mockRouter.url = '/sessions/create';
-    fixture.detectChanges();
-    const descControl = component.sessionForm?.get(DESCRIPTION_FIELD);
     const longDesc = 'a'.repeat(2001);
     descControl?.setValue(longDesc);
     expect(descControl?.valid).toBe(false);

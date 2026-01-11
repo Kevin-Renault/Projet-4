@@ -45,11 +45,6 @@ describe('AuthService', () => {
         httpMock.verify();
     });
 
-    // Test de la création du service
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-
     // Test de l'appel à register qui retourne void en cas de succès
     it('should call register and return void on success', () => {
         service.register(mockRegisterRequest).subscribe(() => {

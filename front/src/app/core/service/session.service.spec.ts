@@ -18,10 +18,6 @@ describe('SessionService', () => {
     service = TestBed.inject(SessionService);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   it('should return the initial isLogged state as false', (done) => {
     service.$isLogged().subscribe((isLogged) => {
       expect(isLogged).toBe(false); // Valeur initiale
