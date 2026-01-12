@@ -8,7 +8,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 
 describe('TeacherService', () => {
   let service: TeacherService;
-  let httpMock: HttpTestingController;
+  let httpTestingController: HttpTestingController;
 
 
   const mockTeacher1: Teacher = { id: 1, lastName: 'Yoda', firstName: 'TheOne', createdAt: new Date(), updatedAt: new Date() };
@@ -23,11 +23,11 @@ describe('TeacherService', () => {
       ]
     });
     service = TestBed.inject(TeacherService);
-    httpMock = TestBed.inject(HttpTestingController);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();  // Ajouté pour vérifier les requêtes
+    httpTestingController.verify();  // Ajouté pour vérifier les requêtes
   });
 
   it('should call all and return an array of teachers', () => {
@@ -36,7 +36,7 @@ describe('TeacherService', () => {
       expect(teachers).toEqual(mockTeachers); // Vérifier que les données correspondent
     });
     // Vérifier que la requête HTTP a été faite
-    const req = httpMock.expectOne('api/teacher'); // Vérifie l'URL
+    const req = httpTestingController.expectOne('api/teacher'); // Vérifie l'URL
     expect(req.request.method).toBe('GET'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur
@@ -50,7 +50,7 @@ describe('TeacherService', () => {
     });
 
     // Vérifier que la requête HTTP a été faite
-    const req1 = httpMock.expectOne('api/teacher/1'); // Vérifie l'URL
+    const req1 = httpTestingController.expectOne('api/teacher/1'); // Vérifie l'URL
     expect(req1.request.method).toBe('GET'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur
@@ -60,7 +60,7 @@ describe('TeacherService', () => {
       expect(teacher).toEqual(mockTeachers[1]); // Vérifier que les données correspondent
     });
     // Vérifier que la requête HTTP a été faite
-    const req2 = httpMock.expectOne('api/teacher/2'); // Vérifie l'URL
+    const req2 = httpTestingController.expectOne('api/teacher/2'); // Vérifie l'URL
     expect(req2.request.method).toBe('GET'); // Vérifie la méthode HTTP
 
     // Simuler la réponse du serveur
