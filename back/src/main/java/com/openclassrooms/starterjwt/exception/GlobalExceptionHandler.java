@@ -3,6 +3,7 @@ package com.openclassrooms.starterjwt.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -25,7 +26,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
-        System.out.println("Global exception handler caught: " + ex.getClass().getName());
         if (ex instanceof NumberFormatException || ex instanceof BadRequestException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else if (ex instanceof BadCredentialsException) {
@@ -34,7 +34,11 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } else if (ex instanceof NotFoundException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (ex instanceof MethodArgumentNotValidException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
+
+            System.out.println("Global exception handler caught: " + ex.getClass().getName());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
