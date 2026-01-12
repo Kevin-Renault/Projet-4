@@ -1,22 +1,27 @@
 package com.openclassrooms.starterjwt.controllers;
 
+import com.openclassrooms.starterjwt.dto.TeacherDto;
+import com.openclassrooms.starterjwt.mapper.SessionMapper;
+import com.openclassrooms.starterjwt.mapper.TeacherMapper;
 import com.openclassrooms.starterjwt.models.Teacher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class TeacherControllerTest extends ControllerTest {
+    @Autowired
+    private TeacherMapper teacherMapper;
 
     @Test
     public void findById() throws Exception {
-        String token = this.loginUser();
+        String token = this.loginUser().getToken();
 
         // Créer un teacher en DB
         Teacher teacher = new Teacher();
@@ -34,7 +39,7 @@ public class TeacherControllerTest extends ControllerTest {
 
     @Test
     public void findAll() throws Exception {
-        String token = this.loginUser();
+        String token = this.loginUser().getToken();
 
         // Créer des teachers en DB
         List<Teacher> teachersToSave = createRandomTeachers(7);
@@ -51,9 +56,12 @@ public class TeacherControllerTest extends ControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Extraire le tableau d'objets et boucler dessus
-        Teacher[] teachers = objectMapper.readValue(response, Teacher[].class);
+        TeacherDto[] teachers = objectMapper.readValue(response, TeacherDto[].class);
 
-        List<Teacher> teacherList = Arrays.asList(teachers);
+        List<Teacher> teacherList = new ArrayList<>();
+        for (TeacherDto teacherDto : teachers) {
+            teacherList.add(teacherMapper.toEntity(teacherDto));
+        }
 
         // Comparaison : vérifier que les listes contiennent les mêmes éléments
         // (sans ordre)

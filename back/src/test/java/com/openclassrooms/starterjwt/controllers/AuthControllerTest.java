@@ -1,27 +1,20 @@
 package com.openclassrooms.starterjwt.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.openclassrooms.starterjwt.config.TestDataConfig;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 public class AuthControllerTest extends ControllerTest {
-
-    @BeforeEach
-    public void setupEach() {
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded" + TestDataConfig.getSimpleUser().getPassword());
-    }
 
     @Test
     public void testRegisterUser() throws Exception {
@@ -30,8 +23,8 @@ public class AuthControllerTest extends ControllerTest {
 
     @Test
     public void testRegisterUserAlreadyExists() throws Exception {
-
         // Create a test user
+        this.registerUser();
         userService.create(TestDataConfig.getSimpleUser());
 
         // Arrange
