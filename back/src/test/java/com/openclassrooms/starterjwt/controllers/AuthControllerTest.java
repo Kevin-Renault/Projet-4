@@ -18,6 +18,7 @@ public class AuthControllerTest extends ControllerTest {
 
     @Test
     public void testRegisterUser() throws Exception {
+        // Test successful user registration
         this.registerUser();
     }
 

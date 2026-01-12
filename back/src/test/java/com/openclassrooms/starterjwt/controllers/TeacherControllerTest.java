@@ -4,6 +4,9 @@ import com.openclassrooms.starterjwt.dto.TeacherDto;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
 import com.openclassrooms.starterjwt.mapper.TeacherMapper;
 import com.openclassrooms.starterjwt.models.Teacher;
+
+import io.jsonwebtoken.lang.Arrays;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,15 @@ public class TeacherControllerTest extends ControllerTest {
     }
 
     @Test
+    public void findByIdNotFound() throws Exception {
+        String token = this.loginUser().getToken();
+        // Appeler /api/teacher/{id} avec le token (optionnel, mais pour end-to-end)
+        mockMvc.perform(get(TEACHER_PATH_STRING + "/" + 65148546)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void findAll() throws Exception {
         String token = this.loginUser().getToken();
 
@@ -58,11 +70,7 @@ public class TeacherControllerTest extends ControllerTest {
         // Extraire le tableau d'objets et boucler dessus
         TeacherDto[] teachers = objectMapper.readValue(response, TeacherDto[].class);
 
-        List<Teacher> teacherList = new ArrayList<>();
-        for (TeacherDto teacherDto : teachers) {
-            teacherList.add(teacherMapper.toEntity(teacherDto));
-        }
-
+        List<Teacher> teacherList = teacherMapper.toEntity(Arrays.asList(teachers));
         // Comparaison : vérifier que les listes contiennent les mêmes éléments
         // (sans ordre)
         Assertions.assertEquals(savedTeachers.size(), teacherList.size());
