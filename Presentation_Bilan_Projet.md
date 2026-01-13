@@ -1,6 +1,6 @@
 # Présentation Bilan - Testez et Améliorez une Application Full-Stack
 
-**Note pour la présentation** : Cliquez sur les liens avec Ctrl (ou Cmd sur Mac) pour ouvrir dans un nouvel onglet de l'éditeur.
+**Note pour la présentation** : Cliquez sur les liens avec Ctrl (ou Cmd sur Mac) pour ouvrir dans un nouvel onglet de l'éditeur. Les captures d'écran des rapports sont incluses pour illustration.
 
 ## Introduction
 - **Projet** : Application de gestion de séances de yoga (front-end Angular + back-end Spring Boot)
@@ -96,6 +96,7 @@
   - **Preuve** : Rapport Jest : 100% statements, 100% branches, 100% functions, 100% lines
 - ✅ **Rapports de couverture générés**
   - **Preuve** : `npm test -- --coverage` génère [front/coverage/jest/lcov-report/index.html](front/coverage/jest/lcov-report/index.html)
+  - ![Rapport Jest](ReportScreen/JestReport.png)
 
 ---
 
@@ -113,6 +114,7 @@
   - **Preuve** : Rapport Cypress : 99.23% statements, 97.72% branches, 98.92% functions, 98.94% lines
 - ✅ **Rapports de couverture générés**
   - **Preuve** : `npm run e2e:ci` génère [front/coverage/lcov-report/index.html](front/coverage/lcov-report/index.html)
+  - ![Rapport Cypress](ReportScreen/CypressReport.png)
 
 ---
 
@@ -128,6 +130,7 @@
   - **Preuve** : Aucun test dans `dto/` (conforme au critère)
 - ✅ **Rapports de couverture générés**
   - **Preuve** : `mvn test` génère [back/target/site/jacoco/index.html](back/target/site/jacoco/index.html)
+  - ![Rapport JaCoCo](ReportScreen/JacocoReport.png)
 
 ---
 
