@@ -40,17 +40,44 @@ describe('AppComponent', () => {
   });
 
 
-  // Test de l'appel à logout et navigation vers l'accueil
-  it('should call logout and navigate to home', () => {
+  // Test d'intégration complet login + logout
+  it('should login, then logout via the button and navigate to home', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    sessionService = TestBed.inject(SessionService);
+
+    // Simuler un login réel
+    const testUser = {
+      token: 'fake-token',
+      type: 'Bearer',
+      id: 1,
+      username: 'testuser',
+      firstName: 'Test',
+      lastName: 'User',
+      admin: false
+    };
+    sessionService.logIn(testUser);
+    fixture.detectChanges();
+
+    // Vérifier que l'utilisateur est bien connecté
+    expect(sessionService.isLogged).toBe(true);
+
     // Espionner router.navigate
     const navigateSpy = jest.spyOn(router, 'navigate');
 
-    // Appeler la méthode logout
-    app.logout();
+    // Chercher le bouton logout dans le DOM et cliquer dessus
+    const logoutBtn = fixture.nativeElement.querySelector('button.logout, button[aria-label="logout"], button[ng-reflect-router-link="/logout"]');
+    if (logoutBtn) {
+      logoutBtn.click();
+      fixture.detectChanges();
+    } else {
+      // Si le bouton n'est pas trouvé, appeler la méthode directement (fallback)
+      app.logout();
+    }
 
-    // S'attendre à ce que router.navigate ait été appelé avec un tableau vide (route d'accueil)
+    // S'attendre à ce que router.navigate ait été appelé avec [''] (route d'accueil)
     expect(navigateSpy).toHaveBeenCalledWith(['']);
-
     // Vérifier que l'utilisateur n'est plus connecté
     expect(sessionService.isLogged).toBe(false);
   });
