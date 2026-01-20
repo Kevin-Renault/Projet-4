@@ -25,6 +25,15 @@ Application de gestion de séances de yoga avec un back-end Spring Boot et un fr
 
    L'API sera disponible sur `http://localhost:8080`
 
+3. **Vérifier les tests et la couverture (recommandé) :**
+   ```bash
+   mvn verify
+   ```
+   Cette commande exécute tous les tests et vérifie le pourcentage de couverture (JaCoCo).
+   
+   Le rapport HTML JaCoCo est généré dans :
+   `back/target/site/jacoco/index.html`
+
 ### Front-end (Angular)
 
 1. **Naviguer vers le dossier front-end :**
@@ -196,6 +205,7 @@ Après l'exécution des tests e2e, le rapport de couverture est généré automa
 ### Back-end
 - `mvn spring-boot:run` : Lance l'application Spring Boot
 - `mvn test` : Tests unitaires Java
+- `mvn verify` : Vérifie la conformité des tests et le % de couverture (JaCoCo)
 
 ## 📈 Métriques de couverture
 
@@ -222,3 +232,25 @@ Après l'exécution des tests e2e, le rapport de couverture est généré automa
 ## 📞 Support
 
 Pour toute question concernant les tests ou l'application, consultez la documentation dans `FicheBristol.md`.
+
+## 🛠️ Dépannage rapide
+
+- **Ports utilisés** :
+  - Back-end : 8080
+  - Front-end : 4200
+- **Nettoyer le projet Maven (back)** :
+  ```bash
+  cd back/
+  mvn clean
+  ```
+- **Nettoyer les dépendances Node (front)** :
+  ```bash
+  cd front/
+  rm -rf node_modules package-lock.json
+  npm install
+  ```
+- **Problèmes fréquents** :
+  - **Port déjà utilisé** : arrêter l’application ou changer le port dans la config.
+  - **Erreur Java version** : vérifier que vous utilisez Java 21 (`java -version`).
+  - **Erreur Node/npm** : vérifier la version (`node -v`, `npm -v`).
+  - **Tests qui échouent après un pull** : refaire un nettoyage (`mvn clean`, `npm install`).
