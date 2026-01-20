@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, ParamMap, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { expect } from '@jest/globals';
 import { SessionService } from 'src/app/core/service/session.service';
@@ -22,12 +22,34 @@ describe('FormComponent', () => {
   let component: FormComponent;
   let fixture: ComponentFixture<FormComponent>;
   let mockSessionService: jest.Mocked<SessionService>;
-  let mockSessionApiService: jest.Mocked<SessionApiService>;
-  let mockTeacherService: jest.Mocked<TeacherService>;
-  let mockRouter: any;
-  let mockActivatedRoute: jest.Mocked<ActivatedRoute>;
-  let mockMatSnackBar: jest.Mocked<MatSnackBar>;
+  let mockSessionApiService: Partial<jest.Mocked<SessionApiService>>;
+  let mockTeacherService: Partial<jest.Mocked<TeacherService>>;
+  let mockRouter: { navigate: jest.Mock; url: string };
 
+  const paramMap: ParamMap = convertToParamMap({ id: '123' });
+  const activatedRouteSnapshotMock: ActivatedRouteSnapshot = {
+    paramMap,
+    url: [],
+    params: {},
+    queryParams: {},
+    queryParamMap: convertToParamMap({}),
+    fragment: null,
+    data: {},
+    outlet: '',
+    component: null,
+    routeConfig: null,
+    root: {} as ActivatedRouteSnapshot,
+    parent: null,
+    firstChild: null,
+    children: [],
+    pathFromRoot: [],
+    toString: () => '',
+    title: undefined, // ou une valeur string si besoin
+  };
+  let mockActivatedRoute: Partial<ActivatedRoute> = {
+    snapshot: activatedRouteSnapshotMock
+  };
+  let mockMatSnackBar: Partial<jest.Mocked<MatSnackBar>>;
 
   const NAME_FIELD = 'name';
   const DATE_FIELD = 'date';
@@ -60,40 +82,26 @@ describe('FormComponent', () => {
   beforeEach(async () => {
     mockSessionService = {
       sessionInformation: { admin: true }
-    } as any;
-
+    } as jest.Mocked<SessionService>;
     mockSessionApiService = {
       detail: jest.fn().mockReturnValue(of(mockSession)),
       create: jest.fn().mockReturnValue(of(mockSession)),
       update: jest.fn().mockReturnValue(of(mockSession))
-    } as any;
+    } as Partial<jest.Mocked<SessionApiService>>;
 
     mockTeacherService = {
       all: jest.fn().mockReturnValue(of(mockTeachers))
-    } as any;
+    } as Partial<jest.Mocked<TeacherService>>;
 
     mockRouter = {
-      navigate: jest.fn()
-    } as any;
-    Object.defineProperty(mockRouter, 'url', {
-      get: () => mockRouter._url || '/sessions/create',
-      set: (value) => { mockRouter._url = value; },
-      configurable: true
-    });
-    mockRouter.url = '/sessions/create';
-
-    mockActivatedRoute = {
-      snapshot: {
-        paramMap: {
-          get: jest.fn().mockReturnValue('1')
-        }
-      }
-    } as any;
+      navigate: jest.fn(),
+      url: '/sessions/create'
+    };
 
     mockMatSnackBar = {
       open: jest.fn()
-    } as any;
-
+    } as Partial<jest.Mocked<MatSnackBar>>;
+    paramMap.get = (key: string) => key === 'id' ? '1' : null;
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,

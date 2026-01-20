@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, ParamMap, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { expect } from '@jest/globals';
 import { SessionService } from '../../../../core/service/session.service';
@@ -17,12 +17,33 @@ describe('DetailComponent', () => {
   let component: DetailComponent;
   let fixture: ComponentFixture<DetailComponent>;
   let mockSessionService: jest.Mocked<SessionService>;
-  let mockSessionApiService: jest.Mocked<SessionApiService>;
-  let mockTeacherService: jest.Mocked<TeacherService>;
-  let mockRouter: jest.Mocked<Router>;
-  let mockActivatedRoute: jest.Mocked<ActivatedRoute>;
-  let mockMatSnackBar: jest.Mocked<MatSnackBar>;
-
+  let mockSessionApiService: Partial<jest.Mocked<SessionApiService>>;
+  let mockTeacherService: Partial<jest.Mocked<TeacherService>>;
+  let mockRouter: Partial<jest.Mocked<Router>>;
+  const paramMap: ParamMap = convertToParamMap({ id: '123' });
+  const activatedRouteSnapshotMock: ActivatedRouteSnapshot = {
+    paramMap,
+    url: [],
+    params: {},
+    queryParams: {},
+    queryParamMap: convertToParamMap({}),
+    fragment: null,
+    data: {},
+    outlet: '',
+    component: null,
+    routeConfig: null,
+    root: {} as ActivatedRouteSnapshot,
+    parent: null,
+    firstChild: null,
+    children: [],
+    pathFromRoot: [],
+    toString: () => '',
+    title: undefined, // ou une valeur string si besoin
+  };
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
+    snapshot: activatedRouteSnapshotMock
+  };
+  let mockMatSnackBar: Partial<jest.Mocked<MatSnackBar>>;
   // Constantes pour les données de test
   const TEST_SESSION_ID = '1';
   const TEST_USER_ID = '1';
@@ -56,34 +77,26 @@ describe('DetailComponent', () => {
   beforeEach(async () => {
     mockSessionService = {
       sessionInformation: { admin: true, id: 1 }
-    } as any;
+    } as jest.Mocked<SessionService>;
 
     mockSessionApiService = {
       detail: jest.fn().mockReturnValue(of(mockSession)),
       delete: jest.fn().mockReturnValue(of(void 0)),
       participate: jest.fn().mockReturnValue(of(void 0)),
       unParticipate: jest.fn().mockReturnValue(of(void 0))
-    } as any;
+    } as Partial<jest.Mocked<SessionApiService>>;
 
     mockTeacherService = {
       detail: jest.fn().mockReturnValue(of(mockTeacher))
-    } as any;
+    } as Partial<jest.Mocked<TeacherService>>;
 
     mockRouter = {
       navigate: jest.fn()
-    } as any;
-
-    mockActivatedRoute = {
-      snapshot: {
-        paramMap: {
-          get: jest.fn().mockReturnValue(TEST_SESSION_ID)
-        }
-      }
-    } as any;
+    } as Partial<jest.Mocked<Router>>;
 
     mockMatSnackBar = {
       open: jest.fn()
-    } as any;
+    } as Partial<jest.Mocked<MatSnackBar>>;
 
     await TestBed.configureTestingModule({
       imports: [

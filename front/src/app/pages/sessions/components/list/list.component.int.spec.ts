@@ -43,8 +43,16 @@ describe('[IT] ListComponent (Integration Test)', () => {
     fixture = TestBed.createComponent(ListComponent);
     component = fixture.componentInstance;
     // Initialise sessionInformation pour éviter erreurs template
-    (component as any).sessionService.sessionInformation =
-      { admin: true, id: 1, username: 'test', firstName: 'Test', lastName: 'User', token: 'token', type: 'Bearer' };
+    const sessionService = TestBed.inject(SessionService);
+    sessionService.sessionInformation = {
+      admin: true,
+      id: 1,
+      username: 'test',
+      firstName: 'Test',
+      lastName: 'User',
+      token: 'token',
+      type: 'Bearer'
+    };
     httpTestingController = TestBed.inject(HttpTestingController);
 
   });
