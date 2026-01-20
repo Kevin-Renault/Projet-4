@@ -20,8 +20,6 @@ Cypress.Commands.add('login', (email: string, password: string) => {
     cy.get(EMAIL_FIELD).type(email);
     cy.get(PASSWORD_FIELD).type(password);
     cy.get(SUBMIT_BUTTON).click();
-    //cy.wait('@loginRequest').its('response.statusCode').should('eq', 200);
-    //cy.url().should('include', '/sessions');
 });
 
 Cypress.Commands.add('register', (user: { firstName: string; lastName: string; email: string; password: string }) => {
@@ -32,124 +30,68 @@ Cypress.Commands.add('register', (user: { firstName: string; lastName: string; e
     cy.get(EMAIL_FIELD).type(user.email);
     cy.get(PASSWORD_FIELD).type(user.password);
     cy.get(SUBMIT_BUTTON).click();
-    //cy.wait('@registerRequest').its('response.statusCode').should('eq', 200);
-    //cy.url().should('include', '/login');
 });
+
 
 
 Cypress.Commands.add('delete_users', () => {
-    // Suppression du premier utilisateur (NEW_USER) - indépendant
-    cy.login(NEW_USER_EMAIL, NEW_USER_PASSWORD);
-    cy.wait('@loginRequest').then((interception) => {
-        if (interception.response && interception.response.statusCode === 200) {
-            cy.url().should('include', '/sessions'); // Vérifier redirection après connexion
-            cy.log('Connexion NEW_USER réussie, proceeding to delete');
+    const users = [
+        { email: NEW_USER_EMAIL, password: NEW_USER_PASSWORD },
+        { email: YOGA_USER_EMAIL, password: YOGA_USER_PASSWORD }
+    ];
 
-            // Aller sur /me
-            cy.intercept('GET', '/api/user/*').as('userRequest1');
-            cy.get('span[routerLink="me"]').click();
-            cy.wait('@userRequest1').then((getInterception) => {
-                if (getInterception.response && getInterception.response.statusCode === 200) {
-                    cy.intercept('DELETE', '/api/user/*').as('userDeleteRequest1');
-                    cy.get('button').contains('Delete').click();
-                    cy.wait('@userDeleteRequest1').then((deleteInterception) => {
-                        if (deleteInterception.response && deleteInterception.response.statusCode === 200) {
-                            cy.log('Utilisateur NEW_USER supprimé avec succès');
-                            cy.url().should('include', '/login');
-                        } else {
-                            cy.log('Échec de suppression de NEW_USER, code: ' + (deleteInterception.response?.statusCode || 'inconnu'));
-                        }
-                    });
-                } else {
-                    cy.log('Utilisateur NEW_USER non trouvé, code: ' + (getInterception.response?.statusCode || 'inconnu'));
+    users.forEach(({ email, password }) => {
+        // Connexion pour récupérer le token
+        cy.request({
+            method: 'POST',
+            url: '/api/auth/login',
+            body: { email, password },
+            failOnStatusCode: false
+        }).then((loginResp) => {
+            if (loginResp.status === 401) {
+                // Si l'utilisateur n'existe pas, on considère comme déjà supprimé
+                cy.log(`Utilisateur ${email} déjà supprimé ou inexistant`);
+                return;
+            }
+            // Si autre code inattendu, échouer
+            expect(loginResp.status, `Login status pour ${email}`).to.eq(200);
+            const token = loginResp.body.token;
+
+            // GET /api/user/me pour vérifier existence
+            cy.request({
+                method: 'GET',
+                url: '/api/user/me',
+                headers: { Authorization: `Bearer ${token}` },
+                failOnStatusCode: false
+            }).then((getResp) => {
+                if (getResp.status !== 200) {
+                    // L'utilisateur n'existe pas, rien à faire
+                    cy.log(`Utilisateur ${email} inexistant (GET)`);
+                    return;
                 }
-            });
-        } else {
-            cy.log('Échec de connexion NEW_USER, code: ' + (interception.response?.statusCode || 'inconnu'));
-        }
-    });
 
-    // Suppression du deuxième utilisateur (YOGA_USER) - indépendant
-    cy.login(YOGA_USER_EMAIL, YOGA_USER_PASSWORD);
-    cy.wait('@loginRequest').then((interception) => {
-        if (interception.response && interception.response.statusCode === 200) {
-            cy.url().should('include', '/sessions'); // Vérifier redirection après connexion
-            cy.log('Connexion YOGA_USER réussie, proceeding to delete');
+                // DELETE /api/user/{id}
+                const userId = getResp.body.id;
+                cy.request({
+                    method: 'DELETE',
+                    url: `/api/user/${userId}`,
+                    headers: { Authorization: `Bearer ${token}` },
+                    failOnStatusCode: false
+                }).then((delResp) => {
+                    expect(delResp.status).to.be.oneOf([200, 204]);
 
-            // Aller sur /me
-            cy.intercept('GET', '/api/user/*').as('userRequest2');
-            cy.get('span[routerLink="me"]').click();
-            cy.wait('@userRequest2').then((getInterception) => {
-                if (getInterception.response && getInterception.response.statusCode === 200) {
-                    cy.intercept('DELETE', '/api/user/*').as('userDeleteRequest2');
-                    cy.get('button').contains('Delete').click();
-                    cy.wait('@userDeleteRequest2').then((deleteInterception) => {
-                        if (deleteInterception.response && deleteInterception.response.statusCode === 200) {
-                            cy.log('Utilisateur YOGA_USER supprimé avec succès');
-                            cy.url().should('include', '/login');
-                        } else {
-                            cy.log('Échec de suppression de YOGA_USER, code: ' + (deleteInterception.response?.statusCode || 'inconnu'));
-                        }
+                    // Vérification finale : GET doit renvoyer 404
+                    cy.request({
+                        method: 'GET',
+                        url: `/api/user/${userId}`,
+                        headers: { Authorization: `Bearer ${token}` },
+                        failOnStatusCode: false
+                    }).then((finalGet) => {
+                        expect(finalGet.status).to.eq(404);
+                        cy.log(`Utilisateur ${email} inexistant (GET) : 404 confirmé après suppression`);
                     });
-                } else {
-                    cy.log('Utilisateur YOGA_USER non trouvé, code: ' + (getInterception.response?.statusCode || 'inconnu'));
-                }
+                });
             });
-        } else {
-            cy.log('Échec de connexion YOGA_USER, code: ' + (interception.response?.statusCode || 'inconnu'));
-        }
+        });
     });
 });
-
-
-
-
-
-
-
-
-
-
-// ***********************************************
-// This example namespace declaration will help
-// with Intellisense and code completion in your
-// IDE or Text Editor.
-// ***********************************************
-// declare namespace Cypress {
-//   interface Chainable<Subject = any> {
-//     customCommand(param: any): typeof customCommand;
-//   }
-// }
-//
-// function customCommand(param: any): void {
-//   console.warn(param);
-// }
-//
-// NOTE: You can use it like so:
-// Cypress.Commands.add('customCommand', customCommand);
-//
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
