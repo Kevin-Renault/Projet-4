@@ -88,8 +88,16 @@ describe('[IT] FormComponent (Integration Test)', () => {
     fixture = TestBed.createComponent(FormComponent);
     component = fixture.componentInstance;
     // Initialise sessionInformation
-    (component as any).sessionService.sessionInformation =
-      { admin: true, id: 1, username: 'test', firstName: 'Test', lastName: 'User', token: 'token', type: 'Bearer' };
+    const sessionService = TestBed.inject(SessionService);
+    sessionService.sessionInformation = {
+      admin: true,
+      id: 1,
+      username: 'test',
+      firstName: 'Test',
+      lastName: 'User',
+      token: 'token',
+      type: 'Bearer'
+    };
     fixture.detectChanges();  // Déclenche ngOnInit
 
     const mockTeachers = [
@@ -146,9 +154,17 @@ describe('[IT] FormComponent (Integration Test)', () => {
     fixture = TestBed.createComponent(FormComponent);
     component = fixture.componentInstance;
     // Initialise sessionInformation
-    (component as any).sessionService.sessionInformation =
-      { admin: true, id: 1, username: 'test', firstName: 'Test', lastName: 'User', token: 'token', type: 'Bearer' };
-    fixture.detectChanges();  // Déclenche ngOnInit avec id=1
+    const sessionService = TestBed.inject(SessionService);
+    sessionService.sessionInformation = {
+      admin: true,
+      id: 1,
+      username: 'test',
+      firstName: 'Test',
+      lastName: 'User',
+      token: 'token',
+      type: 'Bearer'
+    };
+    fixture.detectChanges(); // Déclenche ngOnInit avec id=1
 
     // Mock le chargement de la session existante
     const sessionReq = httpTestingController.expectOne('api/session/1');
