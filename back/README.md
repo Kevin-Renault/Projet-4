@@ -10,7 +10,7 @@ Backend de l'application Yoga App !.
 
 ## Pré-requis pour le bon fonctionnement du back :
 
-    -> JDK 21
+    -> JDK 17
     -> Docker
     -> Docker Compose
     -> Maven 3.9.3 (https://archive.apache.org/dist/maven/maven-3/3.9.3/binaries/) ou plus
