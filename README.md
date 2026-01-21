@@ -229,28 +229,43 @@ Après l'exécution des tests e2e, le rapport de couverture est généré automa
 4. Générer les rapports de couverture
 5. Commiter avec des messages descriptifs
 
-## 📞 Support
-
-Pour toute question concernant les tests ou l'application, consultez la documentation dans `FicheBristol.md`.
-
 ## 🛠️ Dépannage rapide
 
 - **Ports utilisés** :
-  - Back-end : 8080
-  - Front-end : 4200
+   - Back-end : 8080
+   - Front-end : 4200
 - **Nettoyer le projet Maven (back)** :
-  ```bash
-  cd back/
-  mvn clean
-  ```
+   ```bash
+   cd back/
+   mvn clean
+   ```
 - **Nettoyer les dépendances Node (front)** :
-  ```bash
-  cd front/
-  rm -rf node_modules package-lock.json
-  npm install
-  ```
+   ```bash
+   cd front/
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
 - **Problèmes fréquents** :
-  - **Port déjà utilisé** : arrêter l’application ou changer le port dans la config.
-  - **Erreur Java version** : vérifier que vous utilisez Java 21 (`java -version`).
-  - **Erreur Node/npm** : vérifier la version (`node -v`, `npm -v`).
-  - **Tests qui échouent après un pull** : refaire un nettoyage (`mvn clean`, `npm install`).
+   - **Port déjà utilisé** : arrêter l’application ou changer le port dans la config.
+   - **Erreur Java version** : vérifier que vous utilisez Java 21 (`java -version`).
+   - **Erreur Node/npm** : vérifier la version (`node -v`, `npm -v`).
+   - **Tests qui échouent après un pull** : refaire un nettoyage (`mvn clean`, `npm install`).
+
+- **Erreur Docker/WSL2 lors du lancement du back** :
+
+   - Si le message d'erreur indique que la commande `docker` est introuvable ou que Docker n'est pas disponible dans WSL2, deux solutions :
+      - Installer Docker et activer l'intégration WSL2 dans Docker Desktop.
+      - Lancer Docker Desktop et vérifier que l'intégration WSL2 y est bien activée.
+
+   **Exemple d'erreur rencontrée :**
+   ```
+   The command 'docker' could not be found in this WSL 2 distro.
+   We recommend to activate the WSL integration in Docker Desktop settings.
+
+   For details about using Docker Desktop with WSL 2, visit:
+   https://docs.docker.com/go/wsl2/
+   ```
+
+- **Lancer les tests e2e sans le back** :
+      - Il est possible de lancer les tests end-to-end (e2e) même si le backend n'est pas démarré. Cependant, presque tous les tests échoueront ou seront en erreur si le back n'est pas accessible.
+      - Pour de meilleurs résultats, assurez-vous que le backend est bien lancé avant d'exécuter les tests e2e.
