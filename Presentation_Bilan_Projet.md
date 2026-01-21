@@ -38,11 +38,11 @@
     - **@if** (15 occurrences) :
       - [front/src/app/app.component.html](front/src/app/app.component.html#L4)
       - [front/src/app/pages/register/register.component.html](front/src/app/pages/register/register.component.html#L22)
-      - [front/src/app/components/me/me.component.html](front/src/app/components/me/me.component.html#L13, L17)
+      - [front/src/app/components/me/me.component.html L13, L17](front/src/app/components/me/me.component.html#L13)
       - [front/src/app/pages/login/login.component.html](front/src/app/pages/login/login.component.html#L21)
-      - [front/src/app/pages/sessions/components/list/list.component.html](front/src/app/pages/sessions/components/list/list.component.html#L5, L35)
-      - [front/src/app/pages/sessions/components/detail/detail.component.html](front/src/app/pages/sessions/components/detail/detail.component.html#L2, L14, L22, L39)
-      - [front/src/app/pages/sessions/components/form/form.component.html](front/src/app/pages/sessions/components/form/form.component.html#L8, L18)
+      - [front/src/app/pages/sessions/components/list/list.component.html L5, L35](front/src/app/pages/sessions/components/list/list.component.html#L5)
+      - [front/src/app/pages/sessions/components/detail/detail.component.html  L2, L14, L22, L39](front/src/app/pages/sessions/components/detail/detail.component.html#L2)
+      - [front/src/app/pages/sessions/components/form/form.component.html  L8, L18](front/src/app/pages/sessions/components/form/form.component.html#L8)
     - **@for** (2 occurrences) :
       - [front/src/app/pages/sessions/components/list/list.component.html](front/src/app/pages/sessions/components/list/list.component.html#L13)
       - [front/src/app/pages/sessions/components/form/form.component.html](front/src/app/pages/sessions/components/form/form.component.html#L32)

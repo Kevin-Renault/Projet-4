@@ -10,7 +10,7 @@ Backend de l'application Yoga App !.
 
 ## Pré-requis pour le bon fonctionnement du back :
 
-    -> JDK 17
+    -> JDK 21
     -> Docker
     -> Docker Compose
     -> Maven 3.9.3 (https://archive.apache.org/dist/maven/maven-3/3.9.3/binaries/) ou plus
@@ -111,13 +111,24 @@ Dans l'onglet ```Exec```, il faut :
     ```
    Le résultat devrait afficher les données de l'utilisateur inséré précédemment.
    
-   Ce script crée l'utilisateur admin par défaut :
 
-   - login: yoga@studio.com
-   - password: test!1234
+    Ce script crée l'utilisateur admin par défaut :
+    - login: yoga@studio.com
+    - password: test!1234
+
+### Insertion des teachers pour les tests
+
+Pour que les tests passent, insérez au moins deux enseignants :
+
+```sql
+INSERT INTO teacher (first_name, last_name, email, password) VALUES
+  ('John', 'Doe', 'john.doe@yoga.com', 'hash1'),
+  ('Jane', 'Smith', 'jane.smith@yoga.com', 'hash2');
+```
+
+Adaptez les valeurs de mot de passe selon votre configuration (utilisez le même hash que pour l’admin si besoin).
 
 La capture d'écran ci-dessous résume les étapes précédentes :
-
 ![2-docker-desktop-bdd](pictures/2-docker-desktop-bdd.png)
 
 
