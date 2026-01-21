@@ -24,7 +24,7 @@ public class TeacherControllerTest extends ControllerTest {
 
     @Test
     public void findById() throws Exception {
-        String token = this.loginUser().getToken();
+        String token = this.loginSimpleUser().getToken();
 
         // Créer un teacher en DB
         Teacher teacher = new Teacher();
@@ -42,7 +42,7 @@ public class TeacherControllerTest extends ControllerTest {
 
     @Test
     public void findByIdNotFound() throws Exception {
-        String token = this.loginUser().getToken();
+        String token = this.loginSimpleUser().getToken();
         // Appeler /api/teacher/{id} avec le token (optionnel, mais pour end-to-end)
         mockMvc.perform(get(TEACHER_PATH_STRING + "/" + 65148546)
                 .header("Authorization", "Bearer " + token))
@@ -50,8 +50,17 @@ public class TeacherControllerTest extends ControllerTest {
     }
 
     @Test
+    public void findByIdNumberFormatException() throws Exception {
+        String token = this.loginSimpleUser().getToken();
+        // Appeler /api/teacher/{id} avec le token (optionnel, mais pour end-to-end)
+        mockMvc.perform(get(TEACHER_PATH_STRING + "/" + "invalid-id")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void findAll() throws Exception {
-        String token = this.loginUser().getToken();
+        String token = this.loginSimpleUser().getToken();
 
         // Créer des teachers en DB
         List<Teacher> teachersToSave = createRandomTeachers(7);
