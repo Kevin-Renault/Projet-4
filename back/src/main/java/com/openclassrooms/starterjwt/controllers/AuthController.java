@@ -49,18 +49,14 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        boolean isAdmin = false;
         User user = this.userService.findByEmail(userDetails.getUsername());
-        if (user != null) {
-            isAdmin = user.isAdmin();
-        }
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getFirstName(),
                 userDetails.getLastName(),
-                isAdmin));
+                user.isAdmin()));
     }
 
     @PostMapping("/register")
