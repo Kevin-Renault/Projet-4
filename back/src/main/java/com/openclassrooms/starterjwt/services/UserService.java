@@ -46,6 +46,10 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return this.userRepository.findByEmail(email).orElse(null);
+        User user = this.userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            throw new NotFoundException();
+        }
+        return user;
     }
 }
