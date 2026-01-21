@@ -219,7 +219,12 @@ Après l'exécution des tests e2e, le rapport de couverture est généré automa
   - Branches: 100% (13/13)
   - Functions: 100% (63/63)
   - Lines: 100% (246/246)
-- **Tests unitaires JUnit/Mockito** : TODO (back-end Spring Boot)
+- **Tests unitaires JUnit/Mockito (JaCoCo)** : 98% couverture globale
+  - Instructions: 98% (1,483/1,499)
+  - Branches: 95% (94/98)
+  - Lignes: 371/371
+  - Méthodes: 97/97
+  - Classes: 24/24
 
 ## 🤝 Contribution
 
