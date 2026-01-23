@@ -1,12 +1,7 @@
 
 
 
-// Sélecteurs pour les champs du formulaire
-const FIRST_NAME_FIELD = 'input[formControlName=firstName]'
-const LAST_NAME_FIELD = 'input[formControlName=lastName]'
-const EMAIL_FIELD = 'input[formControlName=email]'
-const PASSWORD_FIELD = 'input[formControlName=password]'
-const SUBMIT_BUTTON = 'button[type=submit]'
+import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON } from './selectors';
 
 
 describe('Register spec', () => {
