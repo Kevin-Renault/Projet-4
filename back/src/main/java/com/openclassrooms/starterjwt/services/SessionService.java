@@ -1,11 +1,16 @@
 package com.openclassrooms.starterjwt.services;
 
 import com.openclassrooms.starterjwt.exception.BadRequestException;
+import com.openclassrooms.starterjwt.exception.NotAuthorizedException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.SessionRepository;
 import com.openclassrooms.starterjwt.repository.UserRepository;
+import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,9 +32,16 @@ public class SessionService {
     }
 
     public void delete(Long id) {
-        Session session = this.getById(Long.valueOf(id));
+
+        // Vérifie l'existence de la session et lève NotFoundException si absente
+        Session session = getById(id);
         if (session == null) {
             throw new NotFoundException();
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (null == userDetails.getAdmin() || !userDetails.getAdmin()) {
+            throw new NotAuthorizedException();
         }
         this.sessionRepository.deleteById(id);
     }
