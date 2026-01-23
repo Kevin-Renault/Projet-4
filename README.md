@@ -32,7 +32,15 @@ Application de gestion de séances de yoga avec un back-end Spring Boot et un fr
    Cette commande exécute tous les tests et vérifie le pourcentage de couverture (JaCoCo).
    
    Le rapport HTML JaCoCo est généré dans :
-   `back/target/site/jacoco/index.html`
+   `back/coverage/jacoco/index.html`
+   
+   **Méthode d’accès sous WSL/Windows :**
+   Ouvrez cette URL dans votre navigateur :
+   `file://wsl.localhost/Ubuntu/home/[Utilisateur Ubuntu]/[Chemin du projet]/back/coverage/jacoco/index.html`
+   
+   Exemple pour ce projet :
+   (où 'vin_enault' est le nom d’utilisateur Ubuntu et le projet est situé dans /home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/)
+   `file://wsl.localhost/Ubuntu/home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/back/coverage/jacoco/index.html`
 
 ### Front-end (Angular)
 
@@ -144,7 +152,11 @@ Après l'exécution des tests e2e, le rapport de couverture est généré automa
      ```
      Puis ouvrez `http://localhost:8000` dans votre navigateur. Cette méthode fonctionne dans tous les environnements et permet une navigation complète.
    - **Ou directement via URL WSL (spécifique à votre configuration WSL Ubuntu) :**
-     Ouvrez cette URL dans votre navigateur : `file://wsl.localhost/Ubuntu/home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/front/coverage/lcov-report/index.html`
+   Ouvrez cette URL dans votre navigateur :
+   `file://wsl.localhost/Ubuntu/home/[Utilisateur Ubuntu]/[Chemin du projet]/front/coverage/lcov-report/index.html`
+   
+   Exemple pour ce projet :
+   `file://wsl.localhost/Ubuntu/home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/front/coverage/lcov-report/index.html`
 
 3. **Rapport texte dans le terminal :**
    ```bash
@@ -170,7 +182,12 @@ Après l'exécution des tests e2e, le rapport de couverture est généré automa
      ```
      Puis ouvrez `http://localhost:8000` dans votre navigateur. Cette méthode fonctionne dans tous les environnements et permet une navigation complète.
    - **Ou directement via URL WSL (spécifique à votre configuration WSL Ubuntu) :**
-     Ouvrez cette URL dans votre navigateur : `file://wsl.localhost/Ubuntu/home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/front/coverage/jest/lcov-report/index.html`
+   Ouvrez cette URL dans votre navigateur :
+   `file://wsl.localhost/Ubuntu/home/[Utilisateur Ubuntu]/[Chemin du projet]/front/coverage/jest/lcov-report/index.html`
+   
+   Exemple pour ce projet :
+   (où 'vin_enault' est le nom d’utilisateur Ubuntu et le projet est situé dans /home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/)
+   `file://wsl.localhost/Ubuntu/home/vin_enault/OpenClassrooms/Testez-et-am-liorez-une-application-full-stack/front/coverage/jest/lcov-report/index.html`
 
 ## 📁 Structure du projet
 
