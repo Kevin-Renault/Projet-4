@@ -14,7 +14,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.s;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.starterjwt.config.TestDataConfig;
@@ -22,10 +21,12 @@ import com.openclassrooms.starterjwt.config.TestDatabaseConfig;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
+import com.openclassrooms.starterjwt.payload.response.JwtResponse;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
+import com.openclassrooms.starterjwt.repository.SessionRepository;
 import com.openclassrooms.starterjwt.repository.TeacherRepository;
+import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 import com.openclassrooms.starterjwt.services.UserService;
 
@@ -34,8 +35,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
 @SpringBootTest
@@ -49,9 +48,17 @@ public class ControllerTest {
     public static final String LOGIN_PATH_STRING = AUTH_PATH_STRING + "/login";
     public static final String REGISTER_PATH_STRING = AUTH_PATH_STRING + "/register";
     public static final String TEACHER_PATH_STRING = "/api/teacher";
+    public static final String USER_PATH_STRING = "/api/user";
+    public static final String SESSION_PATH_STRING = "/api/session";
 
     @Autowired
     protected TeacherRepository teacherRepository;
+
+    @Autowired
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected SessionRepository sessionRepository;
 
     @Autowired
     protected MockMvc mockMvc;
@@ -94,7 +101,7 @@ public class ControllerTest {
                 .andExpect(jsonPath("$.message").value("User registered successfully!"));
     }
 
-    protected String loginUser() throws Exception {
+    protected JwtResponse loginUser() throws Exception {
         User testUser = TestDataConfig.getSimpleUser();
         testUser.setId(null);
         userService.create(testUser);
@@ -126,9 +133,7 @@ public class ControllerTest {
                 .andExpect(jsonPath("$.lastName").value(TestDataConfig.getSimpleUser().getLastName()))
                 .andExpect(jsonPath("$.admin").value(TestDataConfig.getSimpleUser().isAdmin()))
                 .andReturn().getResponse().getContentAsString();
-        // 4. Extraire le token
-        String token = objectMapper.readTree(response).get("token").asText();
-        return token;
-
+        JwtResponse jwtResponse = objectMapper.readValue(response, JwtResponse.class);
+        return jwtResponse;
     }
 }
