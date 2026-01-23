@@ -167,6 +167,7 @@
                             <excludes>
                                 <exclude>**/dto/*</exclude>
                             </excludes>
+                             <outputDirectory>${project.basedir}/coverage/jacoco</outputDirectory>
                         </configuration>
                     </execution>
 
