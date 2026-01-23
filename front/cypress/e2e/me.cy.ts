@@ -1,20 +1,17 @@
 
 import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON } from './selectors';
-import { ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD } from './test-data';
+import { ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD, NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSWORD } from './test-data';
 
 
 
 
 describe('Me spec', () => {
 
-  beforeEach(() => {
-    // Login automatique avant chaque test
-    cy.login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);  // Si vous utilisez les commandes ci-dessus
-    // Ou code inline si pas de commandes
-  });
+
+
 
   it('Display user info after login', () => {
-
+    cy.login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);
 
     // Intercepter la requête user réelle pour attendre son chargement
     cy.intercept('GET', '/api/user/1').as('user')
@@ -39,7 +36,7 @@ describe('Me spec', () => {
 
 
   it('Delete user not possible when admin', () => {
-
+    cy.login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);
     // Intercepter la requête user réelle pour attendre son chargement
     cy.intercept('GET', '/api/user/1').as('user')
 
@@ -55,34 +52,62 @@ describe('Me spec', () => {
     cy.get('button').contains('Delete').should('not.exist')
   })
 
+  it('Register login then Delete user', () => {
+    cy.delete_users();
+    cy.register(
+      { firstName: NEW_USER_FIRST_NAME, lastName: NEW_USER_LAST_NAME, email: NEW_USER_EMAIL, password: NEW_USER_PASSWORD }
+    );
 
-  // cy.register({
-  //   firstName: 'John', lastName: 'Doe',
-  //   email: 'yoga_user@studio.com', password: 'test!1234'
-  // });
+    cy.login(NEW_USER_EMAIL, NEW_USER_PASSWORD);
+    // Intercepter la requête user réelle pour attendre son chargement
+    cy.intercept('GET', '/api/user/*').as('user')
 
-  // cy.login('yoga_user@studio.com', 'test!1234');  // Si vous utilisez les commandes ci-dessus
+    // Aller sur /me via le bouton Account
+    cy.get('span[routerLink="me"]').click()
+
+    // Attendre le chargement des données
+    cy.wait('@user')
+
+    cy.intercept('DELETE', '/api/user/*').as('userDeleteRequest')
+
+    cy.get('button').contains('Delete').click()
+
+    cy.wait('@userDeleteRequest').its('response.statusCode').should('eq', 200)
+
+    cy.url().should('include', '/login')
+  })
+
+  it('Register login then Delete user 2', () => {
+    cy.delete_users();
+    cy.register(
+      {
+        firstName: NEW_USER_FIRST_NAME, lastName: NEW_USER_LAST_NAME,
+        email: NEW_USER_EMAIL, password: NEW_USER_PASSWORD
+      }
+    );
+
+    cy.login(NEW_USER_EMAIL, NEW_USER_PASSWORD);
 
 
-  // // Intercepter la requête user réelle pour attendre son chargement
-  // cy.intercept('GET', '/api/user/*').as('user')
+    // Intercepter la requête user réelle pour attendre son chargement
+    cy.intercept('GET', '/api/user/*').as('user')
 
-  // // Aller sur /me via le bouton Account
-  // cy.get('span[routerLink="me"]').click()
+    // Aller sur /me via le bouton Account
+    cy.get('span[routerLink="me"]').click()
 
-  // // Attendre le chargement des données
-  // cy.wait('@user')
+    // Attendre le chargement des données
+    cy.wait('@user')
 
-  // // Intercepter la vraie requête DELETE (pas de mock, utilise l'id réel de session)
-  // cy.intercept('DELETE', '/api/user/*').as('deleteRequest')
+    // Intercepter la vraie requête DELETE
+    cy.intercept('DELETE', '/api/user/*').as('deleteRequest')
 
-  // // Cliquer sur le bouton Delete
-  // cy.get('button').contains('Delete').click()
+    // Cliquer sur le bouton Delete
+    cy.get('button').contains('Delete').click()
 
-  // // Attendre la vraie requête DELETE et vérifier succès
-  // cy.wait('@deleteRequest').its('response.statusCode').should('eq', 200)
+    // Attendre la vraie requête DELETE et vérifier succès
+    cy.wait('@deleteRequest').its('response.statusCode').should('eq', 200)
 
-  // // Après delete, l'utilisateur est déconnecté et redirigé vers /
-  // cy.url().should('include', '/')
-
+    // // Après delete, l'utilisateur est déconnecté et redirigé vers /
+    cy.url().should('include', '/')
+  })
 });
