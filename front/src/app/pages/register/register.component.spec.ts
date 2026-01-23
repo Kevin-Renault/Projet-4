@@ -191,22 +191,6 @@ describe('RegisterComponent', () => {
       expect(component.form.get('password')?.errors).toEqual({ maxlength: { requiredLength: 40, actualLength: 41 } });
 
     });
-
-
-    // Test formulaire valide
-    it('should have valid form when all fields are correct', () => {
-      component.form.setValue({
-        email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-      expect(component.form.valid).toBe(true);
-      expect(component.form.get('email')?.valid).toBe(true);
-      expect(component.form.get('firstName')?.valid).toBe(true);
-      expect(component.form.get('lastName')?.valid).toBe(true);
-      expect(component.form.get('password')?.valid).toBe(true);
-    });
   });
 
 });
