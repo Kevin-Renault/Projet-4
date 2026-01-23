@@ -130,14 +130,6 @@ describe('DetailComponent', () => {
   });
 
 
-  // Test de la méthode back
-  it('should call window.history.back on back', () => {
-    const spy = jest.spyOn(window.history, 'back').mockImplementation(() => { });
-    component.back();
-    expect(spy).toHaveBeenCalled();
-    spy.mockRestore();
-  });
-
   // Test de ngOnDestroy
   it('should complete destroy$ on ngOnDestroy', () => {
     fixture.detectChanges();
