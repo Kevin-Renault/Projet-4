@@ -46,10 +46,12 @@ describe('AppComponent', () => {
     mockRouter = TestBed.inject(Router) as jest.Mocked<Router>;
   });
 
+  // Test de la création de l'app
   it('should create the app', () => {
     expect(app).toBeTruthy();
   });
 
+  // Test du retour de l'état initial isLogged à false
   it('should return the initial isLogged state as false', (done) => {
     app.$isLogged().subscribe((isLogged) => {
       expect(isLogged).toBe(false); // Valeur initiale
@@ -58,17 +60,18 @@ describe('AppComponent', () => {
   });
 
 
+  // Test de l'appel à logout et navigation vers l'accueil
   it('should call logout and navigate to home', () => {
-    // Spy on router.navigate since RouterTestingModule provides a spy, but we need jest spy
+    // Espionner router.navigate car RouterTestingModule fournit un espion, mais nous avons besoin d'un espion jest
     const navigateSpy = jest.spyOn(mockRouter, 'navigate');
 
-    // Call the logout method
+    // Appeler la méthode logout
     app.logout();
 
-    // Expect sessionService.logOut to have been called
+    // S'attendre à ce que sessionService.logOut ait été appelé
     expect(mockSessionService.logOut).toHaveBeenCalled();
 
-    // Expect router.navigate to have been called with empty array (home route)
+    // S'attendre à ce que router.navigate ait été appelé avec un tableau vide (route d'accueil)
     expect(navigateSpy).toHaveBeenCalledWith(['']);
   });
 });

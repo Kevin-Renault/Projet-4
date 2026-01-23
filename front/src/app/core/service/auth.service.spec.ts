@@ -45,13 +45,15 @@ describe('AuthService', () => {
         httpMock.verify();
     });
 
+    // Test de la création du service
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
+    // Test de l'appel à register qui retourne void en cas de succès
     it('should call register and return void on success', () => {
         service.register(mockRegisterRequest).subscribe(() => {
-            // Register returns void, so we just check that it completes
+            // L'inscription retourne void, donc on vérifie juste qu'elle se termine
             expect(true).toBeTruthy();
         });
 
@@ -59,9 +61,10 @@ describe('AuthService', () => {
         expect(req.request.method).toBe('POST');
         expect(req.request.body).toEqual(mockRegisterRequest);
 
-        req.flush(null); // Register typically returns no content
+        req.flush(null); // Simuler une réponse vide pour void
     });
 
+    // Test de l'appel à login qui retourne les informations de session
     it('should call login and return session information', () => {
         service.login(mockLoginRequest).subscribe((sessionInfo) => {
             expect(sessionInfo).toEqual(mockSessionInfo);
