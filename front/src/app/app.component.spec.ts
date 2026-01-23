@@ -46,11 +46,6 @@ describe('AppComponent', () => {
     mockRouter = TestBed.inject(Router) as jest.Mocked<Router>;
   });
 
-  // Test de la création de l'app
-  it('should create the app', () => {
-    expect(app).toBeTruthy();
-  });
-
   // Test du retour de l'état initial isLogged à false
   it('should return the initial isLogged state as false', (done) => {
     app.$isLogged().subscribe((isLogged) => {

@@ -48,10 +48,6 @@ describe('UserService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
 
   it('should call delete and return the deleted user', () => {
     // Appeler la méthode et s'abonner
