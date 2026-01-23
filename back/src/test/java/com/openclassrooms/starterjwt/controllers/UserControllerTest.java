@@ -1,14 +1,21 @@
 package com.openclassrooms.starterjwt.controllers;
 
+import com.openclassrooms.starterjwt.dto.UserDto;
+import com.openclassrooms.starterjwt.mapper.TeacherMapper;
+import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.response.JwtResponse;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UserControllerTest extends ControllerTest {
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     public void findById() throws Exception {
@@ -22,8 +29,10 @@ public class UserControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        User user = objectMapper.readValue(response, User.class);
-
+        UserDto userDto = objectMapper.readValue(response, UserDto.class);
+        // TODO: corriger cette erreur
+        userDto.setPassword("password");
+        User user = userMapper.toEntity(userDto);
         Assertions.assertAll(
                 () -> Assertions.assertEquals(loginResponse.getUsername(), user.getEmail()),
                 () -> Assertions.assertEquals(loginResponse.getAdmin(), user.isAdmin()),

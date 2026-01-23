@@ -3,10 +3,13 @@ package com.openclassrooms.starterjwt.controllers;
 import com.openclassrooms.starterjwt.config.TestDataConfig;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
+import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.response.JwtResponse;
+
+import io.jsonwebtoken.lang.Arrays;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,6 +29,8 @@ import java.util.UUID;
 public class SessionControllerTest extends ControllerTest {
         @Autowired
         private SessionMapper sessionMapper;
+        @Autowired
+        private UserMapper userMapper;
 
         @Test
         public void findById() throws Exception {
@@ -66,6 +71,121 @@ public class SessionControllerTest extends ControllerTest {
                 mockMvc.perform(get(SESSION_PATH_STRING + "/" + sessionIndDB.getId())
                                 .header("Authorization", "Bearer " + token))
                                 .andExpect(status().isNotFound());
+        }
+
+        @Test
+        public void deleteByIdNotFound() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+                // Appeler /api/user avec le token
+                mockMvc.perform(delete(SESSION_PATH_STRING + "/" + 1651654)
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isNotFound());
+        }
+
+        @Test
+        public void participate() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+
+                Session sessionIndDB = createRandomSessions(1).get(0);
+                mockMvc.perform(post(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isOk());
+
+        }
+
+        @Test
+        public void participateWithIdNotFound() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+
+                mockMvc.perform(post(SESSION_PATH_STRING + "/" + 465446546 + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        public void participateWithUserNotFound() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+                String token = loginResponse.getToken();
+                Session sessionIndDB = createRandomSessions(1).get(0);
+
+                mockMvc.perform(post(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + 1554654)
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        public void participateWhileAlreadyParticipating() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+
+                Session sessionIndDB = createRandomSessions(1).get(0);
+                mockMvc.perform(post(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isOk());
+                mockMvc.perform(post(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isBadRequest());
+
+        }
+
+        @Test
+        public void noLongerParticipate() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+
+                Session sessionIndDB = createRandomSessions(1).get(0);
+
+                mockMvc.perform(post(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isOk());
+
+                mockMvc.perform(delete(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isOk());
+        }
+
+        @Test
+        public void noLongerParticipateWithIdNotFound() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+
+                mockMvc.perform(delete(SESSION_PATH_STRING + "/" + 465446546 + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        public void noLongerParticipateWhileAlreadyNotParticipating() throws Exception {
+                JwtResponse loginResponse = this.loginUser();
+
+                String token = loginResponse.getToken();
+
+                Session sessionIndDB = createRandomSessions(1).get(0);
+
+                mockMvc.perform(delete(SESSION_PATH_STRING + "/" + sessionIndDB.getId() + "/participate/"
+                                + loginResponse.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isBadRequest());
         }
 
         @Test
@@ -131,6 +251,40 @@ public class SessionControllerTest extends ControllerTest {
                                                                 session.getUsers()
                                                                                 .containsAll(sessionIndDB
                                                                                                 .getUsers())));
+        }
+
+        @Test
+        public void findAll() throws Exception {
+                String token = this.loginUser().getToken();
+
+                // Créer des sessions en DB
+                List<Session> sessionsToSave = createRandomSessions(7);
+
+                List<Session> savedSessions = new ArrayList<>();
+                for (Session session : sessionsToSave) {
+                        savedSessions.add(sessionRepository.save(session));
+                }
+
+                // Appeler /api/session avec le token
+                String response = mockMvc.perform(get(SESSION_PATH_STRING)
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isOk())
+                                .andReturn().getResponse().getContentAsString();
+
+                // Extraire le tableau d'objets et boucler dessus
+                SessionDto[] sessions = objectMapper.readValue(response, SessionDto[].class);
+
+                List<Session> sessionList = sessionMapper.toEntity(Arrays.asList(sessions));
+
+                // Comparaison : vérifier que les listes contiennent les mêmes éléments
+                // (sans ordre)
+                Assertions.assertEquals(savedSessions.size(), sessionList.size());
+                Assertions.assertTrue(sessionList.containsAll(savedSessions),
+                                "La liste retournée doit contenir toutes les sessions sauvegardées");
+                Assertions.assertTrue(savedSessions.containsAll(sessionList),
+                                "Les sessions sauvegardées doivent être tous présentes dans la réponse");
+                // Si A contient tous les éléments de B et B contient tous les éléments de A,
+                // alors A == B
         }
 
         /**
