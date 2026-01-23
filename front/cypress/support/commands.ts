@@ -1,3 +1,44 @@
+
+// front/cypress/support/commands.ts
+import { EMAIL_FIELD, PASSWORD_FIELD, FIRST_NAME_FIELD, LAST_NAME_FIELD, SUBMIT_BUTTON } from '../e2e/selectors';
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            login(email: string, password: string): Chainable<void>;
+            register(user: { firstName: string; lastName: string; email: string; password: string }): Chainable<void>;
+        }
+    }
+}
+
+Cypress.Commands.add('login', (email: string, password: string) => {
+    cy.visit('/login');
+    cy.intercept('POST', '/api/auth/login').as('loginRequest');
+    cy.get(EMAIL_FIELD).type(email);
+    cy.get(PASSWORD_FIELD).type(password);
+    cy.get(SUBMIT_BUTTON).click();
+    cy.wait('@loginRequest').its('response.statusCode').should('eq', 200);
+    cy.url().should('include', '/sessions');
+});
+
+Cypress.Commands.add('register', (user: { firstName: string; lastName: string; email: string; password: string }) => {
+    cy.visit('/register');
+    cy.intercept('POST', '/api/auth/register').as('registerRequest');
+    cy.get(FIRST_NAME_FIELD).type(user.firstName);
+    cy.get(LAST_NAME_FIELD).type(user.lastName);
+    cy.get(EMAIL_FIELD).type(user.email);
+    cy.get(PASSWORD_FIELD).type(user.password);
+    cy.get(SUBMIT_BUTTON).click();
+    cy.wait('@registerRequest').its('response.statusCode').should('eq', 200);
+    cy.url().should('include', '/login');
+});
+
+
+
+
+
+
+
 // ***********************************************
 // This example namespace declaration will help
 // with Intellisense and code completion in your
