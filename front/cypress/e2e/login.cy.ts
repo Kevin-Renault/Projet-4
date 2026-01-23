@@ -1,6 +1,8 @@
-import { YOGA_USER_EMAIL, YOGA_USER_PASSWORD, INVALID_EMAIL, INVALID_PASSWORD } from './test-data';
+import { YOGA_USER_EMAIL, YOGA_USER_PASSWORD, INVALID_EMAIL, INVALID_PASSWORD, ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD } from './test-data';
 
 describe('Login spec', () => {
+
+
   it('UI Interactions - form elements and navigation', () => {
     cy.visit('/login')
 
@@ -37,7 +39,8 @@ describe('Login spec', () => {
     cy.get('input[formControlName=password]').should('exist')
 
     cy.visit('/sessions')
-    cy.contains('Sessions').should('be.visible')
+    cy.get('input[formControlName=email]').should('exist')
+    cy.get('input[formControlName=password]').should('exist')
 
     // Test de navigation entre pages
     cy.visit('/login')
@@ -51,12 +54,13 @@ describe('Login spec', () => {
 
   it('Login successfull', () => {
     cy.visit('/login')
-
     cy.intercept('POST', '/api/auth/login').as('loginRequest')
-    cy.get('input[formControlName=email]').type(YOGA_USER_EMAIL)
-    cy.get('input[formControlName=password]').type(`${YOGA_USER_PASSWORD}{enter}{enter}`)
+    cy.get('input[formControlName=email]').type(ADMIN_USER_EMAIL)
+    cy.get('input[formControlName=password]').type(`${ADMIN_USER_PASSWORD}{enter}{enter}`)
     cy.wait('@loginRequest').its('response.statusCode').should('eq', 200)
     cy.url().should('include', '/sessions')
+    cy.get('span').contains('Logout').click()
+    cy.url().should('include', '/login')
   })
 
   it('Login fail', () => {
