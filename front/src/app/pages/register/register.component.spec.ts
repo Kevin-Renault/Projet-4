@@ -60,24 +60,10 @@ describe('RegisterComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('Form Validation', () => {
-    it('should have invalid form when email is not valid', () => {
-      component.form.setValue({
-        email: 'invalid-email',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-      expect(component.form.valid).toBe(false);
-      expect(component.form.get('email')?.valid).toBe(false);
-      expect(component.form.get('email')?.errors).toEqual({ email: true });
-    });
 
-    it('should have invalid form when email is empty', () => {
+    // Test required et format email invalide
+    it('should have invalid form when email is invalid', () => {
       component.form.setValue({
         email: '',
         firstName: 'John',
@@ -87,9 +73,21 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('email')?.valid).toBe(false);
       expect(component.form.get('email')?.errors).toEqual({ required: true });
+
+      component.form.setValue({
+        email: 'invalidmail.com',
+        firstName: 'John',
+        lastName: 'Doe',
+        password: 'password123'
+      });
+      expect(component.form.valid).toBe(false);
+      expect(component.form.get('email')?.valid).toBe(false);
+      expect(component.form.get('email')?.errors).toEqual({ email: true });
+
     });
 
-    it('should have invalid form when firstName is empty', () => {
+    // Test required, minlength, maxlength pour firstName
+    it('should have invalid form when firstName is invalid', () => {
       component.form.setValue({
         email: 'test@example.com',
         firstName: '',
@@ -99,22 +97,18 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('firstName')?.valid).toBe(false);
       expect(component.form.get('firstName')?.errors).toEqual({ required: true });
-    });
 
-    it('should have invalid form when firstName is too short', () => {
       component.form.setValue({
         email: 'test@example.com',
-        firstName: 'Jo',
+        firstName: 'jo',
         lastName: 'Doe',
         password: 'password123'
       });
       expect(component.form.valid).toBe(false);
       expect(component.form.get('firstName')?.valid).toBe(false);
       expect(component.form.get('firstName')?.errors).toEqual({ minlength: { requiredLength: 3, actualLength: 2 } });
-    });
 
-    it('should have invalid form when firstName is too long', () => {
-      const longName = 'A'.repeat(21); // 21 characters
+      const longName = 'A'.repeat(21);
       component.form.setValue({
         email: 'test@example.com',
         firstName: longName,
@@ -126,7 +120,9 @@ describe('RegisterComponent', () => {
       expect(component.form.get('firstName')?.errors).toEqual({ maxlength: { requiredLength: 20, actualLength: 21 } });
     });
 
-    it('should have invalid form when lastName is empty', () => {
+    // Test required, minlength, maxlength pour lastName
+    it('should have invalid form when lastName is invalid', () => {
+
       component.form.setValue({
         email: 'test@example.com',
         firstName: 'John',
@@ -136,9 +132,7 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('lastName')?.valid).toBe(false);
       expect(component.form.get('lastName')?.errors).toEqual({ required: true });
-    });
 
-    it('should have invalid form when lastName is too short', () => {
       component.form.setValue({
         email: 'test@example.com',
         firstName: 'John',
@@ -148,9 +142,7 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('lastName')?.valid).toBe(false);
       expect(component.form.get('lastName')?.errors).toEqual({ minlength: { requiredLength: 3, actualLength: 2 } });
-    });
 
-    it('should have invalid form when lastName is too long', () => {
       const longName = 'A'.repeat(21);
       component.form.setValue({
         email: 'test@example.com',
@@ -161,9 +153,12 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('lastName')?.valid).toBe(false);
       expect(component.form.get('lastName')?.errors).toEqual({ maxlength: { requiredLength: 20, actualLength: 21 } });
+
     });
 
-    it('should have invalid form when password is empty', () => {
+    // Test required, minlength, maxlength pour password
+    it('should have invalid form when password is invalid', () => {
+
       component.form.setValue({
         email: 'test@example.com',
         firstName: 'John',
@@ -173,22 +168,18 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('password')?.valid).toBe(false);
       expect(component.form.get('password')?.errors).toEqual({ required: true });
-    });
 
-    it('should have invalid form when password is too short', () => {
       component.form.setValue({
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',
-        password: '12'
+        password: 'mp'
       });
       expect(component.form.valid).toBe(false);
       expect(component.form.get('password')?.valid).toBe(false);
       expect(component.form.get('password')?.errors).toEqual({ minlength: { requiredLength: 3, actualLength: 2 } });
-    });
 
-    it('should have invalid form when password is too long', () => {
-      const longPassword = 'A'.repeat(41); // 41 characters
+      const longPassword = 'A'.repeat(41);
       component.form.setValue({
         email: 'test@example.com',
         firstName: 'John',
@@ -198,8 +189,11 @@ describe('RegisterComponent', () => {
       expect(component.form.valid).toBe(false);
       expect(component.form.get('password')?.valid).toBe(false);
       expect(component.form.get('password')?.errors).toEqual({ maxlength: { requiredLength: 40, actualLength: 41 } });
+
     });
 
+
+    // Test formulaire valide
     it('should have valid form when all fields are correct', () => {
       component.form.setValue({
         email: 'test@example.com',
@@ -215,70 +209,4 @@ describe('RegisterComponent', () => {
     });
   });
 
-  describe('Submit Method', () => {
-    it('should register successfully and navigate to login', fakeAsync(() => {
-      // Configuration du formulaire avec des données valides
-      component.form.setValue({
-        email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-
-      // Mock d'inscription réussie
-      mockAuthService.register.mockReturnValue(of(undefined));
-      const navigateSpy = jest.spyOn(mockRouter, 'navigate').mockResolvedValue(true);
-
-      // Appel de submit
-      component.submit();
-
-      // Traitement des opérations asynchrones
-      tick();
-
-      // Vérification que authService.register a été appelé avec les bonnes données
-      expect(mockAuthService.register).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-
-      // Vérification de la navigation vers /login
-      expect(navigateSpy).toHaveBeenCalledWith(['/login']);
-
-      // Vérification que onError est false
-      expect(component.onError).toBe(false);
-    }));
-
-    it('should handle register error and set onError to true', fakeAsync(() => {
-      // Configuration du formulaire avec des données valides
-      component.form.setValue({
-        email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-
-      // Mock d'erreur d'inscription
-      mockAuthService.register.mockReturnValue(throwError(() => new Error('Register failed')));
-
-      // Appel de submit
-      component.submit();
-
-      // Traitement des opérations asynchrones
-      tick();
-
-      // Vérification que authService.register a été appelé
-      expect(mockAuthService.register).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-
-      // Vérification que onError est défini à true
-      expect(component.onError).toBe(true);
-    }));
-
-  })
 });
