@@ -61,7 +61,7 @@ public class AuthControllerTest extends ControllerTest {
 
     @Test
     public void testAuthenticateExistedUser() throws Exception {
-        this.loginUser();
+        this.loginSimpleUser();
     }
 
     @Test

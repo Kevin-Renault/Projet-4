@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class SessionControllerTest extends ControllerTest {
+
         @Autowired
         private SessionMapper sessionMapper;
         @Autowired
@@ -34,7 +35,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void findById() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
                 Session sessionIndDB = createRandomSessions(1).get(0);
@@ -59,7 +60,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void deleteById() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginAdminUser();
 
                 String token = loginResponse.getToken();
 
@@ -74,8 +75,23 @@ public class SessionControllerTest extends ControllerTest {
         }
 
         @Test
+        public void deleteById_Unauthorized_NonAdmin() throws Exception {
+                JwtResponse loginResponse = this.loginSimpleUser();
+
+                String token = loginResponse.getToken();
+
+                // Création d'une session (par un admin via utilitaire de test)
+                Session session = createRandomSessions(1).get(0);
+
+                // L'utilisateur non admin tente de supprimer la session
+                mockMvc.perform(delete(SESSION_PATH_STRING + "/" + session.getId())
+                                .header("Authorization", "Bearer " + token))
+                                .andExpect(status().isUnauthorized());
+        }
+
+        @Test
         public void deleteByIdNotFound() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
                 // Appeler /api/user avec le token
@@ -86,7 +102,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void participate() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -100,7 +116,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void participateWithIdNotFound() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -113,7 +129,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void participateWithUserNotFound() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
                 String token = loginResponse.getToken();
                 Session sessionIndDB = createRandomSessions(1).get(0);
 
@@ -126,7 +142,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void participateWhileAlreadyParticipating() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -144,7 +160,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void noLongerParticipate() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -163,7 +179,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void noLongerParticipateWithIdNotFound() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -176,7 +192,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void noLongerParticipateWhileAlreadyNotParticipating() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -190,7 +206,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void create() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -222,7 +238,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void update() throws Exception {
-                JwtResponse loginResponse = this.loginUser();
+                JwtResponse loginResponse = this.loginSimpleUser();
 
                 String token = loginResponse.getToken();
 
@@ -255,7 +271,7 @@ public class SessionControllerTest extends ControllerTest {
 
         @Test
         public void findAll() throws Exception {
-                String token = this.loginUser().getToken();
+                String token = this.loginSimpleUser().getToken();
 
                 // Créer des sessions en DB
                 List<Session> sessionsToSave = createRandomSessions(7);
