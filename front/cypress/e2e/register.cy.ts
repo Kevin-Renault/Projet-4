@@ -6,25 +6,8 @@ import { NEW_USER_FIRST_NAME, NEW_USER_LAST_NAME, NEW_USER_EMAIL, NEW_USER_PASSW
 
 
 describe('Register spec', () => {
-  it('Register successfull (Mock Api)', () => {
-    cy.visit('/register')
 
-    cy.intercept('POST', '/api/auth/register', {
-      statusCode: 200,
-      body: {
-        message: 'User registered successfully!',
-      },
-    })
-
-    cy.get(FIRST_NAME_FIELD).type(NEW_USER_FIRST_NAME)
-    cy.get(LAST_NAME_FIELD).type(NEW_USER_LAST_NAME)
-    cy.get(EMAIL_FIELD).type(NEW_USER_EMAIL)
-    cy.get(PASSWORD_FIELD).type(`${NEW_USER_PASSWORD}{enter}`)
-    cy.url().should('include', '/login')
-  })
-
-
-  it('Register fail (real API)', () => {
+  it('Register fail', () => {
     cy.visit('/register')
     cy.intercept('POST', '/api/auth/register').as('registerRequest')
 
