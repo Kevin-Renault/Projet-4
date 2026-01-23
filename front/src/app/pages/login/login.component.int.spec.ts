@@ -91,6 +91,8 @@ describe('LoginComponent Integration Tests', () => {
             email: 'test@example.com',
             password: 'password123'
         });
+        // Vérification que le formulaire est valide (couvre le TU)
+        expect(component.form.valid).toBe(true);
 
         const navigateSpy = jest.spyOn(router, 'navigate');
 

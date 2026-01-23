@@ -95,6 +95,8 @@ describe('RegisterComponent Integration Tests', () => {
             lastName: 'Doe',
             password: 'password123'
         });
+        // Vérification que le formulaire est valide (couvre le TU)
+        expect(component.form.valid).toBe(true);
 
         const navigateSpy = jest.spyOn(router, 'navigate');
 
