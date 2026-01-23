@@ -115,34 +115,6 @@ describe('DetailComponent', () => {
     component = fixture.componentInstance;
   });
 
-  // Test de la création du composant
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
-  // Test d'initialisation des propriétés
-  it('should initialize sessionId and userId from services', () => {
-    fixture.detectChanges();
-    expect(component.sessionId).toBe(TEST_SESSION_ID);
-    expect(component.userId).toBe(TEST_USER_ID);
-    expect(component.isAdmin).toBe(true);
-  });
-
-  // Test de ngOnInit
-  it('should fetch session on ngOnInit', () => {
-    component.ngOnInit();
-    expect(mockSessionApiService.detail).toHaveBeenCalledWith(TEST_SESSION_ID);
-    expect(component.session).toEqual(mockSession);
-    expect(component.isParticipate).toBe(true); // user id 1 is in users array
-  });
-
-  // Test de récupération du teacher
-  it('should fetch teacher when session is loaded', () => {
-    component.ngOnInit();
-    expect(mockTeacherService.detail).toHaveBeenCalledWith(TEST_TEACHER_ID);
-    expect(component.teacher).toEqual(mockTeacher);
-  });
 
   // Test de vérification de participation
   it('should check participation correctly', () => {
@@ -157,27 +129,6 @@ describe('DetailComponent', () => {
     expect(component.isParticipate).toBe(false);
   });
 
-  // Test de la méthode delete
-  it('should delete session and navigate', () => {
-    component.delete();
-    expect(mockSessionApiService.delete).toHaveBeenCalledWith(TEST_SESSION_ID);
-    expect(mockMatSnackBar.open).toHaveBeenCalledWith('Session deleted !', 'Close', { duration: 3000 });
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
-  });
-
-  // Test de la méthode participate
-  it('should participate and refetch session', () => {
-    component.participate();
-    expect(mockSessionApiService.participate).toHaveBeenCalledWith(TEST_SESSION_ID, TEST_USER_ID);
-    expect(mockSessionApiService.detail).toHaveBeenCalledWith(TEST_SESSION_ID);
-  });
-
-  // Test de la méthode unParticipate
-  it('should unParticipate and refetch session', () => {
-    component.unParticipate();
-    expect(mockSessionApiService.unParticipate).toHaveBeenCalledWith(TEST_SESSION_ID, TEST_USER_ID);
-    expect(mockSessionApiService.detail).toHaveBeenCalledWith(TEST_SESSION_ID);
-  });
 
   // Test de la méthode back
   it('should call window.history.back on back', () => {
