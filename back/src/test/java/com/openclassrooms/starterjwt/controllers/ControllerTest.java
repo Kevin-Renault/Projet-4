@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -44,96 +45,134 @@ import org.junit.jupiter.api.BeforeEach;
 @ContextConfiguration(classes = TestDatabaseConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ControllerTest {
-    public static final String AUTH_PATH_STRING = "/api/auth";
-    public static final String LOGIN_PATH_STRING = AUTH_PATH_STRING + "/login";
-    public static final String REGISTER_PATH_STRING = AUTH_PATH_STRING + "/register";
-    public static final String TEACHER_PATH_STRING = "/api/teacher";
-    public static final String USER_PATH_STRING = "/api/user";
-    public static final String SESSION_PATH_STRING = "/api/session";
+        public static final String AUTH_PATH_STRING = "/api/auth";
+        public static final String LOGIN_PATH_STRING = AUTH_PATH_STRING + "/login";
+        public static final String REGISTER_PATH_STRING = AUTH_PATH_STRING + "/register";
+        public static final String TEACHER_PATH_STRING = "/api/teacher";
+        public static final String USER_PATH_STRING = "/api/user";
+        public static final String SESSION_PATH_STRING = "/api/session";
 
-    @Autowired
-    protected TeacherRepository teacherRepository;
+        @Autowired
+        protected TeacherRepository teacherRepository;
 
-    @Autowired
-    protected UserRepository userRepository;
+        @Autowired
+        protected UserRepository userRepository;
 
-    @Autowired
-    protected SessionRepository sessionRepository;
+        @Autowired
+        protected SessionRepository sessionRepository;
 
-    @Autowired
-    protected MockMvc mockMvc;
+        @Autowired
+        protected MockMvc mockMvc;
 
-    @MockBean
-    protected AuthenticationManager authenticationManager;
+        @MockBean
+        protected AuthenticationManager authenticationManager;
 
-    @MockBean
-    protected JwtUtils jwtUtils;
+        @MockBean
+        protected JwtUtils jwtUtils;
 
-    @MockBean
-    protected PasswordEncoder passwordEncoder;
+        @MockBean
+        protected PasswordEncoder passwordEncoder;
 
-    @Autowired
-    protected UserService userService;
+        @MockBean
+        protected com.openclassrooms.starterjwt.security.services.UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+        @Autowired
+        protected UserService userService;
 
-    @BeforeEach
-    public void setupEach() {
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded" + TestDataConfig.getSimpleUser().getPassword());
-        when(jwtUtils.validateJwtToken(anyString())).thenReturn(true);
-        when(jwtUtils.getUserNameFromJwtToken(anyString())).thenReturn(TestDataConfig.getSimpleUser().getEmail());
-    }
+        @Autowired
+        protected ObjectMapper objectMapper;
 
-    protected void registerUser() throws Exception {
+        @BeforeEach
+        public void setupEach() {
+                when(passwordEncoder.encode(anyString()))
+                                .thenReturn("encoded" + TestDataConfig.getSimpleUser().getPassword());
+                when(jwtUtils.validateJwtToken(anyString())).thenReturn(true);
+                // Mock UserDetailsServiceImpl to return the correct UserDetailsImpl for the
+                // username (email)
+                org.mockito.Mockito.lenient()
+                                .when(userDetailsService.loadUserByUsername(org.mockito.ArgumentMatchers.anyString()))
+                                .thenAnswer(invocation -> {
+                                        String email = invocation.getArgument(0);
+                                        com.openclassrooms.starterjwt.models.User user = userRepository
+                                                        .findByEmail(email).orElse(null);
+                                        if (user == null)
+                                                return null;
+                                        return com.openclassrooms.starterjwt.security.services.UserDetailsImpl.builder()
+                                                        .id(user.getId())
+                                                        .username(user.getEmail())
+                                                        .firstName(user.getFirstName())
+                                                        .lastName(user.getLastName())
+                                                        .admin(user.isAdmin())
+                                                        .password(user.getPassword())
+                                                        .build();
+                                });
+        }
 
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail(TestDataConfig.getNewUser().getEmail());
-        signupRequest.setFirstName(TestDataConfig.getNewUser().getFirstName());
-        signupRequest.setLastName(TestDataConfig.getNewUser().getLastName());
-        signupRequest.setPassword(TestDataConfig.getNewUser().getPassword());
+        protected void registerUser() throws Exception {
 
-        // Act & Assert
-        mockMvc.perform(post(REGISTER_PATH_STRING)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User registered successfully!"));
-    }
+                SignupRequest signupRequest = new SignupRequest();
+                signupRequest.setEmail(TestDataConfig.getNewUser().getEmail());
+                signupRequest.setFirstName(TestDataConfig.getNewUser().getFirstName());
+                signupRequest.setLastName(TestDataConfig.getNewUser().getLastName());
+                signupRequest.setPassword(TestDataConfig.getNewUser().getPassword());
 
-    protected JwtResponse loginUser() throws Exception {
-        User testUser = TestDataConfig.getSimpleUser();
-        testUser.setId(null);
-        userService.create(testUser);
+                // Act & Assert
+                mockMvc.perform(post(REGISTER_PATH_STRING)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(signupRequest)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.message").value("User registered successfully!"));
+        }
 
-        // Arrange
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail(TestDataConfig.getSimpleUser().getEmail());
-        loginRequest.setPassword(TestDataConfig.getSimpleUser().getPassword());
+        protected JwtResponse loginSimpleUser() throws Exception {
+                User testUser = TestDataConfig.getSimpleUser();
+                return this.loginUser(testUser);
+        }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                new UserDetailsImpl(testUser.getId(), TestDataConfig.getSimpleUser().getEmail(),
-                        TestDataConfig.getSimpleUser().getFirstName(), TestDataConfig.getSimpleUser().getLastName(),
-                        false, TestDataConfig.getSimpleUser().getPassword()),
-                null);
+        protected JwtResponse loginAdminUser() throws Exception {
+                User testUser = TestDataConfig.getAdminUser();
+                return this.loginUser(testUser);
+        }
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authentication);
-        when(jwtUtils.generateJwtToken(authentication)).thenReturn("jwt-token");
+        private JwtResponse loginUser(User user) throws Exception {
+                user.setId(null);
+                userService.create(user);
 
-        // Act & Assert
-        String response = mockMvc.perform(post(LOGIN_PATH_STRING)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token"))
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.username").value(TestDataConfig.getSimpleUser().getEmail()))
-                .andExpect(jsonPath("$.firstName").value(TestDataConfig.getSimpleUser().getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(TestDataConfig.getSimpleUser().getLastName()))
-                .andExpect(jsonPath("$.admin").value(TestDataConfig.getSimpleUser().isAdmin()))
-                .andReturn().getResponse().getContentAsString();
-        JwtResponse jwtResponse = objectMapper.readValue(response, JwtResponse.class);
-        return jwtResponse;
-    }
+                // Recharge l'utilisateur depuis la base pour avoir l'id et admin corrects
+                User userFromDb = userService.findByEmail(user.getEmail());
+
+                // Arrange
+                LoginRequest loginRequest = new LoginRequest();
+                loginRequest.setEmail(userFromDb.getEmail());
+                loginRequest.setPassword(userFromDb.getPassword());
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                                new UserDetailsImpl(userFromDb.getId(), userFromDb.getEmail(),
+                                                userFromDb.getFirstName(),
+                                                userFromDb.getLastName(),
+                                                userFromDb.isAdmin(), userFromDb.getPassword()),
+                                null);
+
+                when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                                .thenReturn(authentication);
+                when(jwtUtils.generateJwtToken(authentication)).thenReturn("jwt-token");
+                // Mock dynamique pour matcher l'utilisateur courant
+                when(jwtUtils.getUserNameFromJwtToken(anyString())).thenReturn(userFromDb.getEmail());
+                // Act & Assert
+                String response = mockMvc.perform(post(LOGIN_PATH_STRING)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.token").value("jwt-token"))
+                                .andExpect(jsonPath("$.id").value(userFromDb.getId()))
+                                .andExpect(jsonPath("$.username").value(userFromDb.getEmail()))
+                                .andExpect(jsonPath("$.firstName").value(userFromDb.getFirstName()))
+                                .andExpect(jsonPath("$.lastName").value(userFromDb.getLastName()))
+                                .andExpect(jsonPath("$.admin").value(userFromDb.isAdmin()))
+                                .andReturn().getResponse().getContentAsString();
+                JwtResponse jwtResponse = objectMapper.readValue(response, JwtResponse.class);
+                // Ajout pour que le principal soit bien dans le SecurityContext
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                return jwtResponse;
+        }
 }
