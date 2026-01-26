@@ -98,7 +98,8 @@
         "serve-coverage": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "buildTarget": "yoga:build:e2e"
+            "buildTarget": "yoga:build:e2e",
+            "proxyConfig": "proxy.conf.json"
           }
         },
         "extract-i18n": {
@@ -155,7 +156,7 @@
         "e2e-ci": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "browser": "chrome",
+            "browser": "electron",
             "devServerTarget": "yoga:serve-coverage",
             "headless": true,
             "watch": false

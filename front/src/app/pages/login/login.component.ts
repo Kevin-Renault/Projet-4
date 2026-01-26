@@ -5,7 +5,7 @@ import { SessionInformation } from 'src/app/core/models/sessionInformation.inter
 import { SessionService } from 'src/app/core/service/session.service';
 import { LoginRequest } from '../../core/models/loginRequest.interface';
 import { AuthService } from '../../core/service/auth.service';
-import {MaterialModule} from "../../shared/material.module";
+import { MaterialModule } from "../../shared/material.module";
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -35,7 +35,7 @@ export class LoginComponent {
       '',
       [
         Validators.required,
-        Validators.min(3)
+        Validators.minLength(3)
       ]
     ]
   });

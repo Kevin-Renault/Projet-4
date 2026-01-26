@@ -10,7 +10,7 @@ Backend de l'application Yoga App !.
 
 ## Pré-requis pour le bon fonctionnement du back :
 
-    -> JDK 21
+    -> JDK 17
     -> Docker
     -> Docker Compose
     -> Maven 3.9.3 (https://archive.apache.org/dist/maven/maven-3/3.9.3/binaries/) ou plus
@@ -104,7 +104,7 @@ Dans l'onglet ```Exec```, il faut :
     INSERT INTO users(first_name, last_name, admin, email, password) VALUES ('Admin', 'Admin', true, 'yoga@studio.com', '$2a$10$.Hsa/ZjUVaHqi0tp9xieMeewrnZxrZ5pQRzddUXE/WjDu2ZThe6Iq');
     ```
    
-3. Vérifier le contenu de la table `users`.
+4. Vérifier le contenu de la table `users`.
 
     ```
     select * from users;
@@ -119,6 +119,17 @@ Dans l'onglet ```Exec```, il faut :
 La capture d'écran ci-dessous résume les étapes précédentes :
 
 ![2-docker-desktop-bdd](pictures/2-docker-desktop-bdd.png)
+
+
+5. Insérer également deux enseignants nécessaires au bon déroulement des tests :
+
+    ```sql
+    INSERT INTO teachers(first_name, last_name) VALUES ('John', 'Doe');
+    INSERT INTO teachers(first_name, last_name) VALUES ('Jane', 'Smith');
+    ```
+
+    > Ces deux enseignants sont indispensables pour que les tests d’intégration et end-to-end passent correctement. Certains scénarios de test attendent la présence de ces enseignants dans la base de données.
+
 
 
 ## Ressources
